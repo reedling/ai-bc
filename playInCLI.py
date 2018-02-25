@@ -1,6 +1,7 @@
 from pick import pick
 from board import Board
-from characters import Character, getCharacterList
+from utils import getCharacterList
+from player import Player
 from game import Duel
 
 def welcome():
@@ -11,12 +12,16 @@ def welcome():
 		'                                   ***              \n\n')
 
 def listCommands():
-	return ['Start a basic duel', 'Quit']
+	return ['Start a basic duel', 'Practice', 'Quit']
 
-def selectPlayerCharAndOpponent():
+def selectUserChar():
+	userChar, i1 = pick(getCharacterList(), 'Choose your character:', '=>')
+	return Player(userChar, False)
+
+def selectUserCharAndOpponent():
 	userChar, i1 = pick(getCharacterList(), 'Choose your character:', '=>')
 	oppoChar, i2 = pick(getCharacterList(), 'Choose your opponent:', '=>')
-	return Character(userChar, False), Character(oppoChar, True)
+	return Player(userChar, False), Player(oppoChar, True)
 
 def main():
 	new = True
@@ -32,8 +37,13 @@ def main():
 		output = ''
 
 		if resp == 'Start a basic duel':
-			playerChar, aiChar = selectPlayerCharAndOpponent()
-			duel = Duel(playerChar, aiChar, Board())
+			userPlayer, aiPlayer = selectUserCharAndOpponent()
+			duel = Duel(userPlayer, aiPlayer, Board())
+			duel.start()
+		elif resp == 'Practice':
+			userPlayer = selectUserChar()
+			dummyPlayer = Player('Training Dummy', True)
+			duel = Duel(userPlayer, dummyPlayer, Board())
 			duel.start()
 
 main()

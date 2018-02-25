@@ -1,12 +1,18 @@
 from random import randint
 from pair import Pair
+from dummy import DummyAgent, Dummy
 
-class Character:
+class Player:
 	def __init__(self, name, aiControlled):
 		self.name = name
 		self.aiControlled = aiControlled
 		self.life = 20
 		self.position = None
+
+		if name == 'Training Dummy':
+			self.character = Dummy()
+			self.agent = DummyAgent()
+			self.life = float('inf')
 
 	def getAnte(self, info):
 		return None
@@ -38,9 +44,3 @@ class Character:
 			return False
 		else:
 			return True
-
-def getCharacterList():
-	return [
-		'Hikaru',
-		'Khadath'
-	]
