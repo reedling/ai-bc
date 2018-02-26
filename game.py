@@ -29,7 +29,7 @@ class Duel:
 			self.beat += 1
 
 	def coordinateBeat(self):
-		print('beat {}'.format(self.beat))
+		#print('beat {}'.format(self.beat))
 		player1Selection = self.player1.getSelection(self.getStateForPlayer(self.player1, self.player2))
 		player2Selection = self.player2.getSelection(self.getStateForPlayer(self.player2, self.player1))
 		self.coordinateAntes()
@@ -73,8 +73,8 @@ class Duel:
 		return self.handlePrioritySelection(player1Selection, player2Selection)
 
 	def handlePrioritySelection(self, player1Selection, player2Selection):
-		print('p1 {}'.format(player1Selection))
-		print('p2 {}'.format(player2Selection))
+		#print('p1 {}'.format(player1Selection))
+		#print('p2 {}'.format(player2Selection))
 		if player1Selection.priority > player2Selection.priority:
 			self.activePlayer = self.player1
 			self.activePlayerSelection = player1Selection
@@ -86,7 +86,7 @@ class Duel:
 			self.reactivePlayer = self.player1
 			self.reactivePlayerSelection = player1Selection
 		else: # clash!
-			print('clash!')
+			#print('clash!')
 			return True
 
 	def coordinateStartOfBeat(self):
