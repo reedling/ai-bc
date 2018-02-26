@@ -109,4 +109,6 @@ class Duel:
 
 	def coordinateRecycle(self):
 		# note that recycle includes end of beat effects, recycle itself, and UAs that apply at the end of every beat
+		self.activePlayer.recycle()
+		self.reactivePlayer.recycle()
 		return

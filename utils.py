@@ -33,3 +33,6 @@ def getStandardBases():
 			}
 		})
 	]
+
+def getAvailableIndices(fullOptions, discarded, played):
+	return [x for x in range(len(fullOptions)) if x not in discarded and x not in played]
