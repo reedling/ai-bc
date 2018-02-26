@@ -42,10 +42,13 @@ class Player:
 		return False
 
 	def getSelection(self, state):
-		return Pair('fake-style', 'fake-base')
+		stylei = randint(0, len(self.character.styles) - 1)
+		basei = randint(0, len(self.character.bases) - 1)
+		return Pair(self.character.styles[stylei], self.character.bases[basei])
 
 	def getNewBase(self, state):
-		return 'new-fake-base'
+		basei = randint(0, len(self.character.bases) - 1)
+		return self.character.bases[basei]
 
 	def getStartOfBeatBehavior(self, possibleBehaviors, state):
 		return

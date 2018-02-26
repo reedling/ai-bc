@@ -7,4 +7,7 @@ class Pair:
 
 	@property
 	def priority(self):
-		return randint(0, 9)
+		return self.style.priority + self.base.priority
+
+	def __str__(self):
+		return self.style.name + ' ' + self.base.name
