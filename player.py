@@ -1,6 +1,8 @@
 from random import randint
 from pair import Pair
 from dummy import DummyAgent, Dummy
+from characterUtils import getCharacterByName
+from user import UserAgent
 
 class Player:
 	def __init__(self, name, aiControlled):
@@ -13,6 +15,16 @@ class Player:
 			self.character = Dummy()
 			self.agent = DummyAgent()
 			self.life = float('inf')
+		else:
+			self.character = getCharacterByName(name)
+			if self.character is None:
+				self.character = getCharacterByName('Simple Bob')
+
+			if self.aiControlled:
+				self.agent = DummyAgent()
+			else:
+				self.agent = UserAgent()
+
 
 	def getAnte(self, info):
 		return None

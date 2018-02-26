@@ -86,8 +86,12 @@ class Duel:
 			return True
 
 	def coordinateStartOfBeat(self):
-		activeStartOfBeat = self.activePlayer.getStartOfBeatBehavior(self.getPossibleStartOfBeatBehaviors(self.activePlayer, self.activePlayerSelection), self.getStateForPlayer(self.activePlayer, self.reactivePlayer))
-		reactiveStartOfBeat = self.reactivePlayer.getStartOfBeatBehavior(self.getPossibleStartOfBeatBehaviors(self.reactivePlayer, self.reactivePlayerSelection), self.getStateForPlayer(self.reactivePlayer, self.activePlayer))
+		activeStartOfBeat = self.activePlayer.getStartOfBeatBehavior(
+			self.getPossibleStartOfBeatBehaviors(self.activePlayer, self.activePlayerSelection),
+			self.getStateForPlayer(self.activePlayer, self.reactivePlayer))
+		reactiveStartOfBeat = self.reactivePlayer.getStartOfBeatBehavior(
+			self.getPossibleStartOfBeatBehaviors(self.reactivePlayer, self.reactivePlayerSelection),
+			self.getStateForPlayer(self.reactivePlayer, self.activePlayer))
 
 	def getPossibleStartOfBeatBehaviors(self, player, selection):
 		# return 2 dimensional array of possible actions

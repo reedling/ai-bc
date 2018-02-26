@@ -1,6 +1,6 @@
 from pick import pick
 from board import Board
-from utils import getCharacterList
+from characterUtils import getCharacterList
 from player import Player
 from game import Duel
 
