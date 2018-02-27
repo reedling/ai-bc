@@ -56,7 +56,7 @@ class Duel:
 			if ante is not None or lastAnte is not None or firstCall:
 				_getAnte(nextUp, toAnte, False, ante)
 
-		if self.beat == 1:
+		if self.activePlayer is None:
 			val = randint(0, 1)
 			if val == 0:
 				_getAnte(self.player1, self.player2, True)

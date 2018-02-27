@@ -11,10 +11,14 @@ class Pair:
 
 	def getEffectsForTrigger(self, trigger):
 		triggerEffects = []
-		if trigger in self.style.effects:
-			triggerEffects.append(self.base.effects[trigger])
-		if trigger in self.base.effects:
-			triggerEffects.append(self.base.effects[trigger])
+		if 'triggers' in self.style.effects:
+			for st in self.style.effects['triggers']:
+				if st['name'] == trigger:
+					triggerEffects.append(st)
+		if 'triggers' in self.base.effects:
+			for bt in self.base.effects['triggers']:
+				if bt['name'] == trigger:
+					triggerEffects.append(bt)
 		return triggerEffects
 
 	def __str__(self):

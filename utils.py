@@ -3,34 +3,92 @@ from card import Base
 def getStandardBases():
 	return [
 		Base('Dash', None, None, 9, {
-			'canHit': False,
-			'afterActivating': {
-				'move': [1, 2, 3],
-				'onPass': {
-					'canBeHit': False
+			'modifiers': [
+				{
+					'type': 'canHit',
+					'val': False
 				}
-			}
+			],
+			'triggers': [
+				{
+					'name': 'afterActivating',
+					'actions': [
+						{
+							'type': 'move',
+							'val': [1, 2, 3],
+							'conditionals': [
+								{
+									'beforeFn': lambda state: state.me.position < state.opponent.position,
+									'afterFn': lambda state, compare: (state.me.position < state.opponent.position) != compare,
+									'if': {
+										'modifiers': [
+											{
+												'type': 'dodge',
+												'val': True
+											}
+										],
+									}
+								}
+							]
+						}
+					]
+				}
+			]
 		}),
 		Base('Grasp', 1, 2, 5, {
-			'onHit': {
-				'grapple': 1
-			}
+			'triggers': [
+				{
+					'name': 'onHit',
+					'actions': [
+						{
+							'type': 'grapple',
+							'val': 1
+						}
+					]
+				}
+			]
 		}),
 		Base('Drive', 1, 3, 4, {
-			'beforeActivating': {
-				'advance': [1, 2]
-			}
+			'triggers': [
+				{
+					'name': 'beforeActivating',
+					'actions': [
+						{
+							'type': 'advance',
+							'val': [1, 2]
+						}
+					]
+				}
+			]
 		}),
 		Base('Strike', 1, 4, 3, {
-			'stunGuard': 5
+			'modifiers': [
+				{
+					'type': 'stunGuard',
+					'val': 5
+				}
+			]
 		}),
 		Base('Shot', [1, 2, 3, 4], 3, 2, {
-			'stunGuard': 2
+			'modifiers': [
+				{
+					'type': 'stunGuard',
+					'val': 2
+				}
+			]
 		}),
 		Base('Burst', [2, 3], 3, 1, {
-			'startOfBeat': {
-				'retreat': [1, 2]
-			}
+			'triggers': [
+				{
+					'name': 'startOfBeat',
+					'actions': [
+						{
+							'type': 'retreat',
+							'val': [1, 2]
+						}
+					]
+				}
+			]
 		})
 	]
 
