@@ -89,6 +89,11 @@ class Player:
 	def hasRemainingPlayableBases(self):
 		return len(getAvailableIndices(self.character.bases, self.discardedBases, self.playedBases)) > 0
 
+	def getPossibleStartOfBeatBehaviors(self, selection):
+		#print(selection.getEffectsForTrigger('startOfBeat'))
+		# return 2 dimensional array of possible actions
+		return []
+
 	def getStartOfBeatBehavior(self, possibleBehaviors, state):
 		return
 

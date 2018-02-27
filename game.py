@@ -68,8 +68,8 @@ class Duel:
 	def coordinateReveal(self, player1Selection, player2Selection):
 		# will need to apply special handling for Special Actions
 		# will need to take into account special modifiers outside of the styles/bases themselves as well
-		# apply reveal effects for player1
-		# apply reveal effects for player2
+		# apply reveal effects for last active player (or randomly choose)
+		# apply reveal effects for reactive player
 		return self.handlePrioritySelection(player1Selection, player2Selection)
 
 	def handlePrioritySelection(self, player1Selection, player2Selection):
@@ -91,15 +91,11 @@ class Duel:
 
 	def coordinateStartOfBeat(self):
 		activeStartOfBeat = self.activePlayer.getStartOfBeatBehavior(
-			self.getPossibleStartOfBeatBehaviors(self.activePlayer, self.activePlayerSelection),
+			self.activePlayer.getPossibleStartOfBeatBehaviors(self.activePlayerSelection),
 			self.getStateForPlayer(self.activePlayer, self.reactivePlayer))
 		reactiveStartOfBeat = self.reactivePlayer.getStartOfBeatBehavior(
-			self.getPossibleStartOfBeatBehaviors(self.reactivePlayer, self.reactivePlayerSelection),
+			self.reactivePlayer.getPossibleStartOfBeatBehaviors(self.reactivePlayerSelection),
 			self.getStateForPlayer(self.reactivePlayer, self.activePlayer))
-
-	def getPossibleStartOfBeatBehaviors(self, player, selection):
-		# return 2 dimensional array of possible actions
-		return []
 
 	def coordinateActiveAttack(self):
 		return
