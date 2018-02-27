@@ -90,7 +90,7 @@ class Player:
 		return len(getAvailableIndices(self.character.bases, self.discardedBases, self.playedBases)) > 0
 
 	def getPossibleStartOfBeatBehaviors(self, selection):
-		# print(selection.getEffectsForTrigger('startOfBeat'))
+		print(selection.getEffectsForTrigger('startOfBeat'))
 		# return 2 dimensional array of possible actions
 		return []
 
