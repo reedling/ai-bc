@@ -5,6 +5,14 @@ class Board:
     def __init__(self):
         self.spaces = [{} for i in range(7)]
 
+    # Will return True if in range.  False otherwise.
+    def check_range(self, atkr, atkr_sel, dfdr, dfdr_sel):
+        targetable = self.get_positions_in_range(atkr, atkr_sel)
+
+    def get_positions_in_range(self, atkr, atkr_sel):
+        atk_range = atkr_sel.atk_range
+        print(atk_range)
+
     def retreat(self, actor, nonactor, distance):
         if actor.position < nonactor.position:
             magnitude = -distance

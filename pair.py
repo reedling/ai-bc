@@ -10,6 +10,16 @@ class Pair:
     def priority(self):
         return self.style.priority + self.base.priority
 
+    @property
+    def atk_range(self):
+        distances = []
+        for style_dist in self.style.atk_range_options:
+            for base_dist in self.base.atk_range_options:
+                if style_dist is None or base_dist is None:
+                    return None
+                distances.append(style_dist + base_dist)
+        return sorted(set(distances))
+
     def get_effects(self, trigger):
         effs = []
         for st in self.style.effects.triggers:

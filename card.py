@@ -11,6 +11,13 @@ class Style:
         self.priority = priority
         self.effects = effects
 
+    @property
+    def atk_range_options(self):
+        if not isinstance(self.atk_range, list):
+            return [self.atk_range]
+        else:
+            return self.atk_range
+
 
 class Base:
     def __init__(self, name, atk_range, power, priority,
@@ -20,3 +27,10 @@ class Base:
         self.power = power
         self.priority = priority
         self.effects = effects
+
+    @property
+    def atk_range_options(self):
+        if not isinstance(self.atk_range, list):
+            return [self.atk_range]
+        else:
+            return self.atk_range

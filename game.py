@@ -125,6 +125,10 @@ class Duel:
                 atkr, atkr_sel,
                 dfdr, dfdr_sel
             )
+            self.board.check_range(
+                atkr, atkr_sel,
+                dfdr, dfdr_sel
+            )
 
     def coordinate_before_activating(self, atkr, atkr_sel, dfdr, dfdr_sel):
         behaviors = atkr.get_before_activating(
