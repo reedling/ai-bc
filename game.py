@@ -27,9 +27,9 @@ class Duel:
             self.getStateForPlayer(self.player2, self.player1))
         self.board.setPlayerAtPosition(self.player1, 2)
         self.board.setPlayerAtPosition(self.player2, 4)
-        while (self.player1.life > 0 and
-               self.player2.life > 0 and
-               self.beat < 16):
+        while (self.player1.life > 0
+               and self.player2.life > 0
+               and self.beat < 16):
             self.coordinateBeat()
             self.beat += 1
 
@@ -41,18 +41,18 @@ class Duel:
             self.getStateForPlayer(self.player2, self.player1))
         self.coordinateAntes()
         clash = self.coordinateReveal(player1Selection, player2Selection)
-        while (clash and
-               self.player1.hasRemainingPlayableBases() and
-               self.player2.hasRemainingPlayableBases()):
+        while (clash
+               and self.player1.hasRemainingPlayableBases()
+               and self.player2.hasRemainingPlayableBases()):
             player1Selection.base = self.player1.getNewBase(
                 self.getStateForPlayer(self.player1, self.player2))
             player2Selection.base = self.player2.getNewBase(
                 self.getStateForPlayer(self.player2, self.player1))
             clash = self.handlePrioritySelection(player1Selection, player2Selection)
 
-        if (clash and
-            (not self.player1.hasRemainingPlayableBases()
-                or not self.player2.hasRemainingPlayableBases())):
+        if (clash
+            and (not self.player1.hasRemainingPlayableBases()
+                 or not self.player2.hasRemainingPlayableBases())):
             self.coordinateRecycle()
             return
 
