@@ -1,8 +1,9 @@
 from pick import pick
+
 from board import Board
 from characterUtils import getCharacterList
-from player import Player
 from game import Duel
+from player import Player
 
 
 def welcome():

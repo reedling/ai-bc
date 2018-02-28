@@ -1,5 +1,5 @@
-from utils import getStandardBases
 from card import Style, Base
+from utils import getStandardBases
 
 
 class SimpleBob:

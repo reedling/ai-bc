@@ -1,9 +1,10 @@
-from random import choice, shuffle
-from pair import Pair
-from dummy import DummyAgent, Dummy
-from characterUtils import getCharacterByName
-from user import UserAgent
 from collections import deque
+from random import choice, shuffle
+
+from characterUtils import getCharacterByName
+from dummy import DummyAgent, Dummy
+from pair import Pair
+from user import UserAgent
 from utils import getAvailableIndices
 
 
