@@ -81,17 +81,25 @@ class Player:
 
     @property
     def available_styles(self):
-        return get_available_indices(self.character.styles, self.discarded_styles, self.played_styles)
+        return get_available_indices(
+            self.character.styles, self.discarded_styles, self.played_styles
+        )
 
     @property
     def available_bases(self):
-        return get_available_indices(self.character.bases, self.discarded_bases, self.played_bases)
+        return get_available_indices(
+            self.character.bases, self.discarded_bases, self.played_bases
+        )
 
     # def has_playable_styles(self): # is this needed?
-    #    return len(get_available_indices(self.character.styles, self.discarded_styles, self.played_styles)) > 0
+    #   return len(get_available_indices(
+    #       self.character.styles, self.discarded_styles, self.played_styles
+    #   )) > 0
 
     def has_playable_bases(self):
-        return len(get_available_indices(self.character.bases, self.discarded_bases, self.played_bases)) > 0
+        return len(get_available_indices(
+            self.character.bases, self.discarded_bases, self.played_bases
+        )) > 0
 
     def get_possible_start_of_beat(self, selection):
         possible = []

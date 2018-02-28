@@ -10,8 +10,7 @@ def get_standard_bases():
                 Trigger('afterActivating', [
                     Action('move', [1, 2, 3], [
                         Conditional(
-                            lambda state: state.me.position < state.opponent.position,
-                            lambda state, compare: (state.me.position < state.opponent.position) != compare,
+                            lambda state: left_of_opponent(state),
                             Effects([
                                 Modifier('dodge', True)
                             ])
@@ -47,6 +46,10 @@ def get_standard_bases():
             ]
         ))
     ]
+
+
+def left_of_opponent(state):
+    return state.me.position < state.opponent.position
 
 
 def get_available_indices(full_opts, discarded, played):

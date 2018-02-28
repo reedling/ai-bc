@@ -43,8 +43,8 @@ class Behavior:
 
 
 class Conditional:
-    def __init__(self, before_fn, after_fn, if_result=None, else_result=None):
-        self.before_fn = before_fn
-        self.after_fn = after_fn
+    def __init__(self, test_fn, if_result=None, else_result=None):
+        # Call test_fn before and after -- checking equality of results
+        self.test_fn = test_fn
         self.if_result = if_result
         self.else_result = else_result
