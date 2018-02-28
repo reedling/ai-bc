@@ -1,5 +1,6 @@
 from copy import deepcopy
 
+
 class Board:
     def __init__(self):
         self.spaces = [{} for i in range(7)]
@@ -26,21 +27,26 @@ class Board:
 
     def setPlayerAtPosition(self, player, position, direction=None):
         if 'player' in self.spaces[position]:
-            if direction is not None: # attempt jump
+            if direction is not None:  # attempt jump
                 if direction is 'left':
                     if position > 0:
                         self.setPlayerAtPosition(player, position - 1, 'left')
                     else:
-                        print('Tried to jump over player at ' + position + ', but already at left edge of the board.')
+                        print('Tried to jump over player at ' + position +
+                              ', but already at left edge of the board.')
                 elif direction is 'right':
                     if position < len(self.spaces) - 1:
                         self.setPlayerAtPosition(player, position + 1, 'right')
                     else:
-                        print('Tried to jump over player at ' + position + ', but already at right edge of the board.')
+                        print('Tried to jump over player at ' + position +
+                              ', but already at right edge of the board.')
                 else:
-                    print('Tried to set player position to ' + position + ', but it is already occupied. Invalid direction given: ' + direction)
+                    print('Tried to set player position to ' + position +
+                          ', but it is already occupied. ' +
+                          'Invalid direction given: ' + direction)
             else:
-                print('Tried to set player position to ' + position + ', but it is already occupied.')
+                print('Tried to set player position to ' + position +
+                      ', but it is already occupied.')
         else:
             if player.position is not None:
                 self.spaces[player.position].pop('player')

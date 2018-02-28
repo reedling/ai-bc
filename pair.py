@@ -1,5 +1,6 @@
 from random import randint
 
+
 class Pair:
     def __init__(self, style, base):
         self.style = style

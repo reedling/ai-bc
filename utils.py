@@ -1,6 +1,7 @@
 from card import Base
 from cardLogic import Action, Conditional, Effects, Modifier, Trigger
 
+
 def getStandardBases():
     return [
         Base('Dash', None, None, 9, Effects([
@@ -19,13 +20,13 @@ def getStandardBases():
                 ])
             ]
         )),
-        Base('Grasp', 1, 2, 5, Effects([],[
+        Base('Grasp', 1, 2, 5, Effects([], [
                 Trigger('onHit', [
                     Action('grapple', 1)
                 ])
             ]
         )),
-        Base('Drive', 1, 3, 4, Effects([],[
+        Base('Drive', 1, 3, 4, Effects([], [
                 Trigger('beforeActivating', [
                     Action('advance', [1, 2])
                 ])
@@ -39,13 +40,14 @@ def getStandardBases():
                 Modifier('stunGuard', 2)
             ]
         )),
-        Base('Burst', [2, 3], 3, 1, Effects([],[
+        Base('Burst', [2, 3], 3, 1, Effects([], [
                 Trigger('startOfBeat', [
                     Action('retreat', [1, 2])
                 ])
             ]
         ))
     ]
+
 
 def getAvailableIndices(fullOptions, discarded, played):
     return [x for x in range(len(fullOptions)) if x not in discarded and x not in played]

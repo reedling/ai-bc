@@ -1,11 +1,13 @@
 from simpleCharacter import SimpleBob
 
+
 def getCharacterList():
     return [
         'Hikaru',
         'Khadath',
         'Simple Bob'
     ]
+
 
 def getCharacterByName(name):
     chars = {

@@ -4,24 +4,29 @@ from characterUtils import getCharacterList
 from player import Player
 from game import Duel
 
+
 def welcome():
     return (
-        '                   *** BattleCON AI Project v0.1 ***\n'
-        '  Built using rules and characters from the board game by Level 99 Games\n'
+        '               *** BattleCON AI Project v0.1 ***\n'
+        '  All rules and characters from the board game by Level 99 Games\n'
         '  Ctrl + c any time to quit\n'
-        '                                   ***              \n\n')
+        '                               ***\n\n')
+
 
 def listCommands():
     return ['Start a basic duel', 'Practice', 'Quit']
+
 
 def selectUserChar():
     userChar, i1 = pick(getCharacterList(), 'Choose your character:', '=>')
     return Player(userChar, False)
 
+
 def selectUserCharAndOpponent():
     userChar, i1 = pick(getCharacterList(), 'Choose your character:', '=>')
     oppoChar, i2 = pick(getCharacterList(), 'Choose your opponent:', '=>')
     return Player(userChar, False), Player(oppoChar, True)
+
 
 def main():
     new = True
@@ -45,5 +50,6 @@ def main():
             dummyPlayer = Player('Training Dummy', True)
             duel = Duel(userPlayer, dummyPlayer, Board())
             duel.start()
+
 
 main()

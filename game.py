@@ -1,5 +1,6 @@
 from random import randint
 
+
 class Duel:
     def __init__(self, player1, player2, board):
         self.player1 = player1
@@ -20,26 +21,38 @@ class Duel:
         }
 
     def start(self):
-        self.player1.setInitialDiscards(self.getStateForPlayer(self.player1, self.player2))
-        self.player2.setInitialDiscards(self.getStateForPlayer(self.player2, self.player1))
-        self.board.setPlayerAtPosition(self.player1, 2);
-        self.board.setPlayerAtPosition(self.player2, 4);
-        while self.player1.life > 0 and self.player2.life > 0 and self.beat < 16:
+        self.player1.setInitialDiscards(
+            self.getStateForPlayer(self.player1, self.player2))
+        self.player2.setInitialDiscards(
+            self.getStateForPlayer(self.player2, self.player1))
+        self.board.setPlayerAtPosition(self.player1, 2)
+        self.board.setPlayerAtPosition(self.player2, 4)
+        while (self.player1.life > 0 and
+               self.player2.life > 0 and
+               self.beat < 16):
             self.coordinateBeat()
             self.beat += 1
 
     def coordinateBeat(self):
-        #print('beat {}'.format(self.beat))
-        player1Selection = self.player1.getSelection(self.getStateForPlayer(self.player1, self.player2))
-        player2Selection = self.player2.getSelection(self.getStateForPlayer(self.player2, self.player1))
+        # print('beat {}'.format(self.beat))
+        player1Selection = self.player1.getSelection(
+            self.getStateForPlayer(self.player1, self.player2))
+        player2Selection = self.player2.getSelection(
+            self.getStateForPlayer(self.player2, self.player1))
         self.coordinateAntes()
         clash = self.coordinateReveal(player1Selection, player2Selection)
-        while clash and self.player1.hasRemainingPlayableBases() and self.player2.hasRemainingPlayableBases():
-            player1Selection.base = self.player1.getNewBase(self.getStateForPlayer(self.player1, self.player2))
-            player2Selection.base = self.player2.getNewBase(self.getStateForPlayer(self.player2, self.player1))
+        while (clash and
+               self.player1.hasRemainingPlayableBases() and
+               self.player2.hasRemainingPlayableBases()):
+            player1Selection.base = self.player1.getNewBase(
+                self.getStateForPlayer(self.player1, self.player2))
+            player2Selection.base = self.player2.getNewBase(
+                self.getStateForPlayer(self.player2, self.player1))
             clash = self.handlePrioritySelection(player1Selection, player2Selection)
 
-        if clash and (not self.player1.hasRemainingPlayableBases() or not self.player2.hasRemainingPlayableBases()):
+        if (clash and
+            (not self.player1.hasRemainingPlayableBases()
+                or not self.player2.hasRemainingPlayableBases())):
             self.coordinateRecycle()
             return
 
@@ -68,14 +81,15 @@ class Duel:
 
     def coordinateReveal(self, player1Selection, player2Selection):
         # will need to apply special handling for Special Actions
-        # will need to take into account special modifiers outside of the styles/bases themselves as well
+        # will need to take into account special modifiers
+        #    outside of the styles/bases themselves as well
         # apply reveal effects for last active player (or randomly choose)
         # apply reveal effects for reactive player
         return self.handlePrioritySelection(player1Selection, player2Selection)
 
     def handlePrioritySelection(self, player1Selection, player2Selection):
-        #print('p1 {}'.format(player1Selection))
-        #print('p2 {}'.format(player2Selection))
+        # print('p1 {}'.format(player1Selection))
+        # print('p2 {}'.format(player2Selection))
         if player1Selection.priority > player2Selection.priority:
             self.activePlayer = self.player1
             self.activePlayerSelection = player1Selection
@@ -86,8 +100,8 @@ class Duel:
             self.activePlayerSelection = player2Selection
             self.reactivePlayer = self.player1
             self.reactivePlayerSelection = player1Selection
-        else: # clash!
-            #print('clash!')
+        else:  # clash!
+            # print('clash!')
             return True
 
     def coordinateStartOfBeat(self):
@@ -107,7 +121,9 @@ class Duel:
         return
 
     def coordinateRecycle(self):
-        # note that recycle includes end of beat effects, recycle itself, and UAs that apply at the end of every beat
+        # note that recycle includes end of beat effects,
+        #  recycle itself, and
+        #  UAs that apply at the end of every beat
         self.activePlayer.recycle()
         self.reactivePlayer.recycle()
         return
@@ -120,4 +136,3 @@ class Duel:
 
         for b in behaviors:
             _performBehavior(b)
-

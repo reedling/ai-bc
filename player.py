@@ -6,6 +6,7 @@ from user import UserAgent
 from collections import deque
 from utils import getAvailableIndices
 
+
 class Player:
     def __init__(self, name, aiControlled):
         self.name = name
@@ -14,7 +15,7 @@ class Player:
         self.position = None
         self.discardedStyles = deque()
         self.discardedBases = deque()
-        #self.otherDiscards = deque()
+        # self.otherDiscards = deque()
         self.playedStyles = []
         self.playedBases = []
 
@@ -31,7 +32,6 @@ class Player:
                 self.agent = DummyAgent()
             else:
                 self.agent = UserAgent()
-
 
     def getAnte(self, info):
         return None
@@ -83,7 +83,7 @@ class Player:
     def getAvailableBases(self):
         return getAvailableIndices(self.character.bases, self.discardedBases, self.playedBases)
 
-    #def hasRemainingPlayableStyles(self): # is this needed?
+    # def hasRemainingPlayableStyles(self): # is this needed?
     #    return len(getAvailableIndices(self.character.styles, self.discardedStyles, self.playedStyles)) > 0
 
     def hasRemainingPlayableBases(self):
