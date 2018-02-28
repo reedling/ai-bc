@@ -57,11 +57,16 @@ class Duel:
             return
 
         self.coordinate_start_of_beat()
-        self.coordinate_active_attack()
-        self.coordinate_reactive_attack()
+        self.coordinate_attack(self.active_p, self.active_p_sel,
+                               self.reactive_p, self.reactive_p_sel)
+        self.coordinate_attack(self.reactive_p, self.reactive_p_sel,
+                               self.active_p, self.active_p_sel)
 
+        # Note that recycle includes end of beat effects and
+        #  UAs that apply at the end of every beat
+        # self.coordinate_end_of_beat()
         self.coordinate_recycle()
-        print(self.board.spaces)
+        # print(self.board.spaces)
 
     def coordinate_antes(self):
         def ca(to_ante, next_up, first_invocation, last_ante=None):
@@ -114,16 +119,20 @@ class Duel:
             self.state_for_player(self.reactive_p, self.active_p))
         self.execute(reactive_behaviors, self.reactive_p, self.active_p)
 
-    def coordinate_active_attack(self):
-        return
+    def coordinate_attack(self, atkr, atkr_sel, dfdr, dfdr_sel):
+        if (not atkr.stunned):
+            self.coordinate_before_activating(
+                atkr, atkr_sel,
+                dfdr, dfdr_sel
+            )
 
-    def coordinate_reactive_attack(self):
-        return
+    def coordinate_before_activating(self, atkr, atkr_sel, dfdr, dfdr_sel):
+        behaviors = atkr.get_before_activating(
+            atkr.get_possible_before_activating(atkr_sel),
+            self.state_for_player(atkr, dfdr))
+        self.execute(behaviors, atkr, dfdr)
 
     def coordinate_recycle(self):
-        # Note that recycle includes end of beat effects,
-        #  recycle itself, and
-        #  UAs that apply at the end of every beat
         if self.active_p is None:
             val = randint(0, 1)
             if val == 0:
@@ -138,8 +147,10 @@ class Duel:
 
     def execute(self, behaviors, actor, nonactor):
         def ex(behavior):
-            print(behavior)
-            if behavior.type == 'retreat':
+            # print(behavior)
+            if behavior.type == 'advance':
+                self.board.advance(actor, nonactor, behavior.val)
+            elif behavior.type == 'retreat':
                 self.board.retreat(actor, nonactor, behavior.val)
 
         for b in behaviors:

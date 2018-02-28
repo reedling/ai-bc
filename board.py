@@ -12,15 +12,22 @@ class Board:
             magnitude = distance
         self.move(actor, magnitude)
 
+    def advance(self, actor, nonactor, distance):
+        if actor.position < nonactor.position:
+            magnitude = distance
+        else:
+            magnitude = -distance
+        self.move(actor, magnitude)
+
     def move(self, player, magnitude):
         if magnitude < 0:
             for i in range(magnitude, 0):
                 if player.position > 0:
-                    self.set(player, player.position - 1)
+                    self.set(player, player.position - 1, 'left')
         else:
             for i in range(magnitude):
                 if player.position < len(self.spaces) - 1:
-                    self.set(player, player.position + 1)
+                    self.set(player, player.position + 1, 'right')
 
     def teleport(self, player, position):
         return
@@ -32,20 +39,20 @@ class Board:
                     if position > 0:
                         self.set(player, position - 1, 'left')
                     else:
-                        print('Tried to jump over player at ' + position
+                        print('Tried to jump over player at ' + str(position)
                               + ', but already at left edge of the board.')
                 elif direction is 'right':
                     if position < len(self.spaces) - 1:
                         self.set(player, position + 1, 'right')
                     else:
-                        print('Tried to jump over player at ' + position
+                        print('Tried to jump over player at ' + str(position)
                               + ', but already at right edge of the board.')
                 else:
-                    print('Tried to set player position to ' + position
+                    print('Tried to set player position to ' + str(position)
                           + ', but it is already occupied. '
                           + 'Invalid direction given: ' + direction)
             else:
-                print('Tried to set player position to ' + position
+                print('Tried to set player position to ' + str(position)
                       + ', but it is already occupied.')
         else:
             if player.position is not None:

@@ -34,6 +34,9 @@ class Player:
             else:
                 self.agent = UserAgent()
 
+    def __str__(self):
+        return self.name
+
     def get_ante(self, info):
         return None
 
@@ -110,6 +113,21 @@ class Player:
         return possible
 
     def get_start_of_beat(self, possible_behaviors, state):
+        chosen = []
+        indices = [x for x in range(0, len(possible_behaviors))]
+        for i in indices:
+            chosen.append(choice(possible_behaviors[i]))
+        return chosen
+
+    def get_possible_before_activating(self, selection):
+        possible = []
+        effects = selection.get_effects('beforeActivating')
+        for effect in effects:
+            for action in effect.actions:
+                possible.append(action.behaviors)
+        return possible
+
+    def get_before_activating(self, possible_behaviors, state):
         chosen = []
         indices = [x for x in range(0, len(possible_behaviors))]
         for i in indices:
