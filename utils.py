@@ -1,5 +1,5 @@
 from card import Base
-from cardLogic import Action, Conditional, Effects, Modifier, Trigger
+from card_logic import Action, Conditional, Effects, Modifier, Trigger
 
 
 def getStandardBases():

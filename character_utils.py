@@ -1,4 +1,4 @@
-from simpleCharacter import SimpleBob
+from simple import SimpleBob
 
 
 def getCharacterList():

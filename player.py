@@ -1,7 +1,7 @@
 from collections import deque
 from random import choice, shuffle
 
-from characterUtils import getCharacterByName
+from character_utils import getCharacterByName
 from dummy import DummyAgent, Dummy
 from pair import Pair
 from user import UserAgent

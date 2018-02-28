@@ -1,4 +1,4 @@
-from cardLogic import Effects
+from card_logic import Effects
 
 
 class Style:
