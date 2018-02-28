@@ -124,9 +124,17 @@ class Duel:
         # Note that recycle includes end of beat effects,
         #  recycle itself, and
         #  UAs that apply at the end of every beat
-        self.active_p.recycle()
-        self.reactive_p.recycle()
-        return
+        if self.active_p is None:
+            val = randint(0, 1)
+            if val == 0:
+                self.p1.recycle()
+                self.p2.recycle()
+            else:
+                self.p2.recycle()
+                self.p1.recycle()
+        else:
+            self.active_p.recycle()
+            self.reactive_p.recycle()
 
     def execute(self, behaviors, actor, nonactor):
         def ex(behavior):
