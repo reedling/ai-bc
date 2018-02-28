@@ -1,4 +1,4 @@
-from random import choice
+from random import choice, shuffle
 from pair import Pair
 from dummy import DummyAgent, Dummy
 from characterUtils import getCharacterByName
@@ -90,12 +90,19 @@ class Player:
 		return len(getAvailableIndices(self.character.bases, self.discardedBases, self.playedBases)) > 0
 
 	def getPossibleStartOfBeatBehaviors(self, selection):
-		print(selection.getEffectsForTrigger('startOfBeat'))
-		# return 2 dimensional array of possible actions
-		return []
+		possible = []
+		effects = selection.getEffectsForTrigger('startOfBeat')
+		for effect in effects:
+			for action in effect.actions:
+				possible.append(action.getBehaviors())
+		return possible
 
-	def getStartOfBeatBehavior(self, possibleBehaviors, state):
-		return
+	def getStartOfBeatBehaviors(self, possibleBehaviors, state):
+		chosen = []
+		indices = [x for x in range(0, len(possibleBehaviors))]
+		for i in indices:
+			chosen.append(choice(possibleBehaviors[i]))
+		return chosen
 
 	def isStunned(self):
 		return False

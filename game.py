@@ -22,8 +22,8 @@ class Duel:
 	def start(self):
 		self.player1.setInitialDiscards(self.getStateForPlayer(self.player1, self.player2))
 		self.player2.setInitialDiscards(self.getStateForPlayer(self.player2, self.player1))
-		self.board.setPlayerAtPosition(self.player1, 3);
-		self.board.setPlayerAtPosition(self.player2, 5);
+		self.board.setPlayerAtPosition(self.player1, 2);
+		self.board.setPlayerAtPosition(self.player2, 4);
 		while self.player1.life > 0 and self.player2.life > 0 and self.beat < 16:
 			self.coordinateBeat()
 			self.beat += 1
@@ -48,6 +48,7 @@ class Duel:
 		self.coordinateReactiveAttack()
 
 		self.coordinateRecycle()
+		print(self.board.spaces)
 
 	def coordinateAntes(self):
 		def _getAnte(toAnte, nextUp, firstCall, lastAnte=None):
@@ -90,12 +91,14 @@ class Duel:
 			return True
 
 	def coordinateStartOfBeat(self):
-		activeStartOfBeat = self.activePlayer.getStartOfBeatBehavior(
+		activeStartOfBeat = self.activePlayer.getStartOfBeatBehaviors(
 			self.activePlayer.getPossibleStartOfBeatBehaviors(self.activePlayerSelection),
 			self.getStateForPlayer(self.activePlayer, self.reactivePlayer))
-		reactiveStartOfBeat = self.reactivePlayer.getStartOfBeatBehavior(
+		self.performBehaviors(activeStartOfBeat, self.activePlayer, self.reactivePlayer)
+		reactiveStartOfBeat = self.reactivePlayer.getStartOfBeatBehaviors(
 			self.reactivePlayer.getPossibleStartOfBeatBehaviors(self.reactivePlayerSelection),
 			self.getStateForPlayer(self.reactivePlayer, self.activePlayer))
+		self.performBehaviors(reactiveStartOfBeat, self.reactivePlayer, self.activePlayer)
 
 	def coordinateActiveAttack(self):
 		return
@@ -108,3 +111,13 @@ class Duel:
 		self.activePlayer.recycle()
 		self.reactivePlayer.recycle()
 		return
+
+	def performBehaviors(self, behaviors, actor, nonactor):
+		def _performBehavior(behavior):
+			print(behavior)
+			if behavior.type == 'retreat':
+				self.board.retreat(actor, nonactor, behavior.val)
+
+		for b in behaviors:
+			_performBehavior(b)
+
