@@ -1,4 +1,4 @@
-from copy import deepcopy
+from copy import copy
 
 
 class Board:
@@ -10,33 +10,33 @@ class Board:
             magnitude = -distance
         else:
             magnitude = distance
-        self.movePlayer(actor, magnitude)
+        self.move(actor, magnitude)
 
-    def movePlayer(self, player, magnitude):
+    def move(self, player, magnitude):
         if magnitude < 0:
             for i in range(magnitude, 0):
                 if player.position > 0:
-                    self.setPlayerAtPosition(player, player.position - 1)
+                    self.set(player, player.position - 1)
         else:
             for i in range(magnitude):
                 if player.position < len(self.spaces) - 1:
-                    self.setPlayerAtPosition(player, player.position + 1)
+                    self.set(player, player.position + 1)
 
-    def teleportPlayerTo(self, player, position):
+    def teleport(self, player, position):
         return
 
-    def setPlayerAtPosition(self, player, position, direction=None):
+    def set(self, player, position, direction=None):
         if 'player' in self.spaces[position]:
             if direction is not None:  # attempt jump
                 if direction is 'left':
                     if position > 0:
-                        self.setPlayerAtPosition(player, position - 1, 'left')
+                        self.set(player, position - 1, 'left')
                     else:
                         print('Tried to jump over player at ' + position
                               + ', but already at left edge of the board.')
                 elif direction is 'right':
                     if position < len(self.spaces) - 1:
-                        self.setPlayerAtPosition(player, position + 1, 'right')
+                        self.set(player, position + 1, 'right')
                     else:
                         print('Tried to jump over player at ' + position
                               + ', but already at right edge of the board.')
@@ -54,5 +54,6 @@ class Board:
             player.position = position
         # need to keep track of positions traveled through
 
-    def getStatus(self):
-        return deepcopy(self.spaces)
+    @property
+    def status(self):
+        return copy(self.spaces)

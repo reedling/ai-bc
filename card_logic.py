@@ -22,7 +22,8 @@ class Action:
         self.opts = opts
         self.conditionals = conditionals
 
-    def getBehaviors(self):
+    @property
+    def behaviors(self):
         behaviors = []
         if isinstance(self.opts, list):
             for opt in self.opts:
@@ -42,8 +43,8 @@ class Behavior:
 
 
 class Conditional:
-    def __init__(self, beforeFn, afterFn, ifResult=None, elseResult=None):
-        self.beforeFn = beforeFn
-        self.afterFn = afterFn
-        self.ifResult = ifResult
-        self.elseResult = elseResult
+    def __init__(self, before_fn, after_fn, if_result=None, else_result=None):
+        self.before_fn = before_fn
+        self.after_fn = after_fn
+        self.if_result = if_result
+        self.else_result = else_result

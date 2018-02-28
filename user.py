@@ -1,18 +1,19 @@
 class UserAgent:
-    def getAnte(self, info):
+    def get_ante(self, info):
         return None
 
-    def setInitialDiscards(self, state):
+    def init_discards(self, state):
         return
 
-    def isStunned(self):
+    @property
+    def stunned(self):
         return False
 
-    def getSelection(self, state):
+    def get_selection(self, state):
         return Pair('fake-style', 'fake-base')
 
-    def getNewBase(self, state):
+    def get_new_base(self, state):
         return 'new-fake-base'
 
-    def getStartOfBeatBehavior(self, possibleBehaviors, state):
+    def get_start_of_beat(self, possible_behaviors, state):
         return

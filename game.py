@@ -2,137 +2,137 @@ from random import randint
 
 
 class Duel:
-    def __init__(self, player1, player2, board):
-        self.player1 = player1
-        self.player2 = player2
+    def __init__(self, p1, p2, board):
+        self.p1 = p1
+        self.p2 = p2
         self.board = board
         self.beat = 1
-        self.activePlayer = None
-        self.activePlayerSelection = None
-        self.reactivePlayer = None
-        self.reactivePlayerSelection = None
+        self.active_p = None
+        self.active_p_sel = None
+        self.reactive_p = None
+        self.reactive_p_sel = None
 
-    def getStateForPlayer(self, player, oppo):
+    def state_for_player(self, player, oppo):
         return {
-            'me': player.getStatus(),
-            'opponent': oppo.getStatus(),
-            'board': self.board.getStatus(),
+            'me': player.status,
+            'opponent': oppo.status,
+            'board': self.board.status,
             'beat': self.beat
         }
 
     def start(self):
-        self.player1.setInitialDiscards(
-            self.getStateForPlayer(self.player1, self.player2))
-        self.player2.setInitialDiscards(
-            self.getStateForPlayer(self.player2, self.player1))
-        self.board.setPlayerAtPosition(self.player1, 2)
-        self.board.setPlayerAtPosition(self.player2, 4)
-        while (self.player1.life > 0
-               and self.player2.life > 0
+        self.p1.init_discards(
+            self.state_for_player(self.p1, self.p2))
+        self.p2.init_discards(
+            self.state_for_player(self.p2, self.p1))
+        self.board.set(self.p1, 2)
+        self.board.set(self.p2, 4)
+        while (self.p1.life > 0
+               and self.p2.life > 0
                and self.beat < 16):
-            self.coordinateBeat()
+            self.coordinate_beat()
             self.beat += 1
 
-    def coordinateBeat(self):
+    def coordinate_beat(self):
         # print('beat {}'.format(self.beat))
-        player1Selection = self.player1.getSelection(
-            self.getStateForPlayer(self.player1, self.player2))
-        player2Selection = self.player2.getSelection(
-            self.getStateForPlayer(self.player2, self.player1))
-        self.coordinateAntes()
-        clash = self.coordinateReveal(player1Selection, player2Selection)
+        p1_selection = self.p1.get_selection(
+            self.state_for_player(self.p1, self.p2))
+        p2_selection = self.p2.get_selection(
+            self.state_for_player(self.p2, self.p1))
+        self.coordinate_antes()
+        clash = self.coordinate_reveal(p1_selection, p2_selection)
         while (clash
-               and self.player1.hasRemainingPlayableBases()
-               and self.player2.hasRemainingPlayableBases()):
-            player1Selection.base = self.player1.getNewBase(
-                self.getStateForPlayer(self.player1, self.player2))
-            player2Selection.base = self.player2.getNewBase(
-                self.getStateForPlayer(self.player2, self.player1))
-            clash = self.handlePrioritySelection(player1Selection, player2Selection)
+               and self.p1.has_playable_bases()
+               and self.p2.has_playable_bases()):
+            p1_selection.base = self.p1.get_new_base(
+                self.state_for_player(self.p1, self.p2))
+            p2_selection.base = self.p2.get_new_base(
+                self.state_for_player(self.p2, self.p1))
+            clash = self.handle_priority_selection(p1_selection, p2_selection)
 
         if (clash
-            and (not self.player1.hasRemainingPlayableBases()
-                 or not self.player2.hasRemainingPlayableBases())):
-            self.coordinateRecycle()
+            and (not self.p1.has_playable_bases()
+                 or not self.p2.has_playable_bases())):
+            self.coordinate_recycle()
             return
 
-        self.coordinateStartOfBeat()
-        self.coordinateActiveAttack()
-        self.coordinateReactiveAttack()
+        self.coordinate_start_of_beat()
+        self.coordinate_active_attack()
+        self.coordinate_reactive_attack()
 
-        self.coordinateRecycle()
+        self.coordinate_recycle()
         print(self.board.spaces)
 
-    def coordinateAntes(self):
-        def _getAnte(toAnte, nextUp, firstCall, lastAnte=None):
-            ante = toAnte.getAnte(self.getStateForPlayer(toAnte, nextUp))
+    def coordinate_antes(self):
+        def ca(to_ante, next_up, first_invocation, last_ante=None):
+            ante = to_ante.get_ante(self.state_for_player(to_ante, next_up))
             # apply ante to board or players as necessary
-            if ante is not None or lastAnte is not None or firstCall:
-                _getAnte(nextUp, toAnte, False, ante)
+            if ante is not None or last_ante is not None or first_invocation:
+                ca(next_up, to_ante, False, ante)
 
-        if self.activePlayer is None:
+        if self.active_p is None:
             val = randint(0, 1)
             if val == 0:
-                _getAnte(self.player1, self.player2, True)
+                ca(self.p1, self.p2, True)
             else:
-                _getAnte(self.player2, self.player1, True)
+                ca(self.p2, self.p1, True)
         else:
-            _getAnte(self.activePlayer, self.reactivePlayer, True)
+            ca(self.active_p, self.reactive_p, True)
 
-    def coordinateReveal(self, player1Selection, player2Selection):
-        # will need to apply special handling for Special Actions
-        # will need to take into account special modifiers
+    def coordinate_reveal(self, p1_selection, p2_selection):
+        # Will need to apply special handling for Special Actions
+        # Will need to take into account special modifiers
         #    outside of the styles/bases themselves as well
-        # apply reveal effects for last active player (or randomly choose)
-        # apply reveal effects for reactive player
-        return self.handlePrioritySelection(player1Selection, player2Selection)
+        # Apply reveal effects for last active player (or randomly choose)
+        # Apply reveal effects for reactive player
+        return self.handle_priority_selection(p1_selection, p2_selection)
 
-    def handlePrioritySelection(self, player1Selection, player2Selection):
-        # print('p1 {}'.format(player1Selection))
-        # print('p2 {}'.format(player2Selection))
-        if player1Selection.priority > player2Selection.priority:
-            self.activePlayer = self.player1
-            self.activePlayerSelection = player1Selection
-            self.reactivePlayer = self.player2
-            self.reactivePlayerSelection = player2Selection
-        elif player1Selection.priority < player2Selection.priority:
-            self.activePlayer = self.player2
-            self.activePlayerSelection = player2Selection
-            self.reactivePlayer = self.player1
-            self.reactivePlayerSelection = player1Selection
-        else:  # clash!
+    def handle_priority_selection(self, p1_selection, p2_selection):
+        # print('p1 {}'.format(p1_selection))
+        # print('p2 {}'.format(p2_selection))
+        if p1_selection.priority > p2_selection.priority:
+            self.active_p = self.p1
+            self.active_p_sel = p1_selection
+            self.reactive_p = self.p2
+            self.reactive_p_sel = p2_selection
+        elif p1_selection.priority < p2_selection.priority:
+            self.active_p = self.p2
+            self.active_p_sel = p2_selection
+            self.reactive_p = self.p1
+            self.reactive_p_sel = p1_selection
+        else:  # Clash!
             # print('clash!')
             return True
 
-    def coordinateStartOfBeat(self):
-        activeStartOfBeat = self.activePlayer.getStartOfBeatBehaviors(
-            self.activePlayer.getPossibleStartOfBeatBehaviors(self.activePlayerSelection),
-            self.getStateForPlayer(self.activePlayer, self.reactivePlayer))
-        self.performBehaviors(activeStartOfBeat, self.activePlayer, self.reactivePlayer)
-        reactiveStartOfBeat = self.reactivePlayer.getStartOfBeatBehaviors(
-            self.reactivePlayer.getPossibleStartOfBeatBehaviors(self.reactivePlayerSelection),
-            self.getStateForPlayer(self.reactivePlayer, self.activePlayer))
-        self.performBehaviors(reactiveStartOfBeat, self.reactivePlayer, self.activePlayer)
+    def coordinate_start_of_beat(self):
+        active_behaviors = self.active_p.get_start_of_beat(
+            self.active_p.get_possible_start_of_beat(self.active_p_sel),
+            self.state_for_player(self.active_p, self.reactive_p))
+        self.execute(active_behaviors, self.active_p, self.reactive_p)
+        reactive_behaviors = self.reactive_p.get_start_of_beat(
+            self.reactive_p.get_possible_start_of_beat(self.reactive_p_sel),
+            self.state_for_player(self.reactive_p, self.active_p))
+        self.execute(reactive_behaviors, self.reactive_p, self.active_p)
 
-    def coordinateActiveAttack(self):
+    def coordinate_active_attack(self):
         return
 
-    def coordinateReactiveAttack(self):
+    def coordinate_reactive_attack(self):
         return
 
-    def coordinateRecycle(self):
-        # note that recycle includes end of beat effects,
+    def coordinate_recycle(self):
+        # Note that recycle includes end of beat effects,
         #  recycle itself, and
         #  UAs that apply at the end of every beat
-        self.activePlayer.recycle()
-        self.reactivePlayer.recycle()
+        self.active_p.recycle()
+        self.reactive_p.recycle()
         return
 
-    def performBehaviors(self, behaviors, actor, nonactor):
-        def _performBehavior(behavior):
+    def execute(self, behaviors, actor, nonactor):
+        def ex(behavior):
             print(behavior)
             if behavior.type == 'retreat':
                 self.board.retreat(actor, nonactor, behavior.val)
 
         for b in behaviors:
-            _performBehavior(b)
+            ex(b)

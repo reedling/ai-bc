@@ -1,7 +1,7 @@
 from simple import SimpleBob
 
 
-def getCharacterList():
+def get_character_list():
     return [
         'Hikaru',
         'Khadath',
@@ -9,7 +9,7 @@ def getCharacterList():
     ]
 
 
-def getCharacterByName(name):
+def character_by_name(name):
     chars = {
         'Simple Bob': SimpleBob()
     }

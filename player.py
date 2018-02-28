@@ -1,109 +1,113 @@
 from collections import deque
 from random import choice, shuffle
 
-from character_utils import getCharacterByName
+from character_utils import character_by_name
 from dummy import DummyAgent, Dummy
 from pair import Pair
 from user import UserAgent
-from utils import getAvailableIndices
+from utils import get_available_indices
 
 
 class Player:
-    def __init__(self, name, aiControlled):
+    def __init__(self, name, is_ai):
         self.name = name
-        self.aiControlled = aiControlled
+        self.is_ai = is_ai
         self.life = 20
         self.position = None
-        self.discardedStyles = deque()
-        self.discardedBases = deque()
-        # self.otherDiscards = deque()
-        self.playedStyles = []
-        self.playedBases = []
+        self.discarded_styles = deque()
+        self.discarded_bases = deque()
+        # self.discarded_other = deque()
+        self.played_styles = []
+        self.played_bases = []
 
         if name == 'Training Dummy':
             self.character = Dummy()
             self.agent = DummyAgent()
             self.life = float('inf')
         else:
-            self.character = getCharacterByName(name)
+            self.character = character_by_name(name)
             if self.character is None:
-                self.character = getCharacterByName('Simple Bob')
+                self.character = character_by_name('Simple Bob')
 
-            if self.aiControlled:
+            if self.is_ai:
                 self.agent = DummyAgent()
             else:
                 self.agent = UserAgent()
 
-    def getAnte(self, info):
+    def get_ante(self, info):
         return None
 
-    def getStatus(self):
+    @property
+    def status(self):
         return {
             'life': self.life,
             'position': self.position
         }
 
-    def discardStyle(self, index):
-        self.discardedStyles.append(index)
+    def discard_style(self, index):
+        self.discarded_styles.append(index)
 
-    def discardBase(self, index):
-        self.discardedBases.append(index)
+    def discard_base(self, index):
+        self.discarded_bases.append(index)
 
-    def setInitialDiscards(self, state):
-        self.discardStyle(0)
-        self.discardBase(0)
-        self.discardStyle(1)
-        self.discardBase(1)
+    def init_discards(self, state):
+        self.discard_style(0)
+        self.discard_base(0)
+        self.discard_style(1)
+        self.discard_base(1)
 
-    def recoverDiscards(self):
-        self.discardedStyles.popleft()
-        self.discardedBases.popleft()
+    def recover_discards(self):
+        self.discarded_styles.popleft()
+        self.discarded_bases.popleft()
 
     def recycle(self):
-        self.recoverDiscards()
-        self.discardStyle(self.playedStyles.pop())
-        self.discardBase(self.playedBases.pop())
-        self.playedStyles = []
-        self.playedBases = []
+        self.recover_discards()
+        self.discard_style(self.played_styles.pop())
+        self.discard_base(self.played_bases.pop())
+        self.played_styles = []
+        self.played_bases = []
 
-    def getSelection(self, state):
-        stylei = choice(self.getAvailableStyles())
-        basei = choice(self.getAvailableBases())
-        self.playedStyles.append(stylei)
-        self.playedBases.append(basei)
+    def get_selection(self, state):
+        stylei = choice(self.available_styles)
+        basei = choice(self.available_bases)
+        self.played_styles.append(stylei)
+        self.played_bases.append(basei)
         return Pair(self.character.styles[stylei], self.character.bases[basei])
 
-    def getNewBase(self, state):
-        basei = choice(self.getAvailableBases())
-        self.playedBases.append(basei)
+    def get_new_base(self, state):
+        basei = choice(self.available_bases)
+        self.played_bases.append(basei)
         return self.character.bases[basei]
 
-    def getAvailableStyles(self):
-        return getAvailableIndices(self.character.styles, self.discardedStyles, self.playedStyles)
+    @property
+    def available_styles(self):
+        return get_available_indices(self.character.styles, self.discarded_styles, self.played_styles)
 
-    def getAvailableBases(self):
-        return getAvailableIndices(self.character.bases, self.discardedBases, self.playedBases)
+    @property
+    def available_bases(self):
+        return get_available_indices(self.character.bases, self.discarded_bases, self.played_bases)
 
-    # def hasRemainingPlayableStyles(self): # is this needed?
-    #    return len(getAvailableIndices(self.character.styles, self.discardedStyles, self.playedStyles)) > 0
+    # def has_playable_styles(self): # is this needed?
+    #    return len(get_available_indices(self.character.styles, self.discarded_styles, self.played_styles)) > 0
 
-    def hasRemainingPlayableBases(self):
-        return len(getAvailableIndices(self.character.bases, self.discardedBases, self.playedBases)) > 0
+    def has_playable_bases(self):
+        return len(get_available_indices(self.character.bases, self.discarded_bases, self.played_bases)) > 0
 
-    def getPossibleStartOfBeatBehaviors(self, selection):
+    def get_possible_start_of_beat(self, selection):
         possible = []
-        effects = selection.getEffectsForTrigger('startOfBeat')
+        effects = selection.get_effects('startOfBeat')
         for effect in effects:
             for action in effect.actions:
-                possible.append(action.getBehaviors())
+                possible.append(action.behaviors)
         return possible
 
-    def getStartOfBeatBehaviors(self, possibleBehaviors, state):
+    def get_start_of_beat(self, possible_behaviors, state):
         chosen = []
-        indices = [x for x in range(0, len(possibleBehaviors))]
+        indices = [x for x in range(0, len(possible_behaviors))]
         for i in indices:
-            chosen.append(choice(possibleBehaviors[i]))
+            chosen.append(choice(possible_behaviors[i]))
         return chosen
 
-    def isStunned(self):
+    @property
+    def stunned(self):
         return False

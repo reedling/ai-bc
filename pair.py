@@ -10,15 +10,15 @@ class Pair:
     def priority(self):
         return self.style.priority + self.base.priority
 
-    def getEffectsForTrigger(self, trigger):
-        triggerEffects = []
+    def get_effects(self, trigger):
+        effs = []
         for st in self.style.effects.triggers:
             if st.name == trigger:
-                triggerEffects.append(st)
+                effs.append(st)
         for bt in self.base.effects.triggers:
             if bt.name == trigger:
-                triggerEffects.append(bt)
-        return triggerEffects
+                effs.append(bt)
+        return effs
 
     def __str__(self):
         return self.style.name + ' ' + self.base.name

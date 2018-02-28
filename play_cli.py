@@ -1,7 +1,7 @@
 from pick import pick
 
 from board import Board
-from character_utils import getCharacterList
+from character_utils import get_character_list
 from game import Duel
 from player import Player
 
@@ -14,19 +14,19 @@ def welcome():
         '                               ***\n\n')
 
 
-def listCommands():
+def list_commands():
     return ['Start a basic duel', 'Practice', 'Quit']
 
 
-def selectUserChar():
-    userChar, i1 = pick(getCharacterList(), 'Choose your character:', '=>')
-    return Player(userChar, False)
+def select_user_char():
+    user_char, i1 = pick(get_character_list(), 'Choose your character:', '=>')
+    return Player(user_char, False)
 
 
-def selectUserCharAndOpponent():
-    userChar, i1 = pick(getCharacterList(), 'Choose your character:', '=>')
-    oppoChar, i2 = pick(getCharacterList(), 'Choose your opponent:', '=>')
-    return Player(userChar, False), Player(oppoChar, True)
+def select_user_char_and_opponent():
+    user_char, i1 = pick(get_character_list(), 'Choose your character:', '=>')
+    oppo_char, i2 = pick(get_character_list(), 'Choose your opponent:', '=>')
+    return Player(user_char, False), Player(oppo_char, True)
 
 
 def main():
@@ -39,17 +39,17 @@ def main():
             new = False
         elif len(output) > 0:
             output = output + '\n\n'
-        resp, i = pick(listCommands(), output + 'Menu:', '=>')
+        resp, i = pick(list_commands(), output + 'Menu:', '=>')
         output = ''
 
         if resp == 'Start a basic duel':
-            userPlayer, aiPlayer = selectUserCharAndOpponent()
-            duel = Duel(userPlayer, aiPlayer, Board())
+            user_player, ai_player = select_user_char_and_opponent()
+            duel = Duel(user_player, ai_player, Board())
             duel.start()
         elif resp == 'Practice':
-            userPlayer = selectUserChar()
-            dummyPlayer = Player('Training Dummy', True)
-            duel = Duel(userPlayer, dummyPlayer, Board())
+            user_player = select_user_char()
+            dummy_player = Player('Training Dummy', True)
+            duel = Duel(user_player, dummy_player, Board())
             duel.start()
 
 

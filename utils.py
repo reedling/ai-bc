@@ -2,7 +2,7 @@ from card import Base
 from card_logic import Action, Conditional, Effects, Modifier, Trigger
 
 
-def getStandardBases():
+def get_standard_bases():
     return [
         Base('Dash', None, None, 9, Effects([
                 Modifier('canHit', False)
@@ -49,5 +49,5 @@ def getStandardBases():
     ]
 
 
-def getAvailableIndices(fullOptions, discarded, played):
-    return [x for x in range(len(fullOptions)) if x not in discarded and x not in played]
+def get_available_indices(full_opts, discarded, played):
+    return [x for x in range(len(full_opts)) if x not in discarded and x not in played]
