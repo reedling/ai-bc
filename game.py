@@ -41,6 +41,9 @@ class Duel:
 
     def coordinate_beat(self):
         # print('beat {}'.format(self.beat))
+        self.p1.refresh()
+        self.p2.refresh()
+
         p1_selection = self.p1.get_selection(
             self.state_for_player(self.p1, self.p2))
         p2_selection = self.p2.get_selection(

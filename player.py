@@ -19,6 +19,9 @@ class Player:
         # self.discarded_other = deque()
         self.played_styles = []
         self.played_bases = []
+        self.stunned = False
+        self.stun_guard = 0
+        self.stun_immune = False
 
         if name == 'Training Dummy':
             self.character = Dummy()
@@ -36,6 +39,9 @@ class Player:
 
     def __str__(self):
         return self.name + '(' + str(self.life) + ')'
+
+    def refresh(self):
+        self.stunned = False
 
     def get_ante(self, info):
         return None
@@ -151,7 +157,6 @@ class Player:
 
     def handle_damage(self, damage, attack, defense):
         self.life -= damage
-
-    @property
-    def stunned(self):
-        return False
+        if damage > 0:
+            if damage > self.stun_guard and not self.stun_immune:
+                self.stunned = True
