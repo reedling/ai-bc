@@ -1,5 +1,6 @@
-from copy import deepcopy
 from random import randint
+
+from state import State
 
 
 class Duel:
@@ -16,7 +17,7 @@ class Duel:
         self.loser = None
 
     def state_for_player(self, player, oppo):
-        return deepcopy(self)
+        return State(player, oppo, self.board, self.beat)
 
     def start(self):
         self.p1.init_discards(

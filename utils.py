@@ -82,7 +82,7 @@ def stacks(mod):
 
 
 def left_of_opponent(state):
-    return state.me.position < state.opponent.position
+    return state.p.position < state.o.position
 
 
 def get_available_indices(full_opts, discarded, played):
