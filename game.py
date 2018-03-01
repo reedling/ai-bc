@@ -202,10 +202,14 @@ class Duel:
     def execute(self, behaviors, actor, nonactor):
         def ex(behavior):
             # print(behavior)
-            if behavior.type == 'advance':
+            if behavior.btype == 'advance':
                 self.board.advance(actor, nonactor, behavior.val)
-            elif behavior.type == 'retreat':
+            elif behavior.btype == 'retreat':
                 self.board.retreat(actor, nonactor, behavior.val)
+            elif behavior.btype == 'push':
+                self.board.push(actor, nonactor, behavior.val)
+            elif behavior.btype == 'pull':
+                self.board.pull(actor, nonactor, behavior.val)
 
         for b in behaviors:
             ex(b)
@@ -214,6 +218,10 @@ class Duel:
         return self.winner is not None
 
     def handle_duel_end(self):
+        dummy = 'Training Dummy'
+        if self.p1.name == dummy or self.p2.name == dummy:
+            return
+
         m = '{} {} {}'
         m_reactive = m + ' - as Reactive Player on last turn'
         m_early = m + ' - on beat {}'

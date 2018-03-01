@@ -5,8 +5,8 @@ class Effects:
 
 
 class Modifier:
-    def __init__(self, type, val):
-        self.type = type
+    def __init__(self, mtype, val):
+        self.mtype = mtype
         self.val = val
 
 
@@ -17,29 +17,44 @@ class Trigger:
 
 
 class Action:
-    def __init__(self, type, opts, conditionals=[]):
-        self.type = type
+    def __init__(self, atype, opts, conditionals=[]):
+        self.atype = atype
         self.opts = opts
         self.conditionals = conditionals
+
+    @staticmethod
+    def get_behaviors(atype, magnitude):
+        if atype == 'grapple':
+            return [
+                Behavior('push', magnitude),
+                Behavior('pull', magnitude),
+            ]
+        elif atype == 'move':
+            return [
+                Behavior('advance', magnitude),
+                Behavior('retreat', magnitude)
+            ]
+        else:
+            return [Behavior(atype, magnitude)]
 
     @property
     def behaviors(self):
         behaviors = []
         if isinstance(self.opts, list):
             for opt in self.opts:
-                behaviors.append(Behavior(self.type, opt))
+                behaviors.extend(self.get_behaviors(self.atype, opt))
         else:
-            behaviors.append(Behavior(self.type, self.opts))
+            behaviors.extend(self.get_behaviors(self.atype, self.opts))
         return behaviors
 
 
 class Behavior:
-    def __init__(self, type, val):
-        self.type = type
+    def __init__(self, btype, val):
+        self.btype = btype
         self.val = val
 
     def __str__(self):
-        return self.type.capitalize() + ' ' + str(self.val)
+        return self.btype.capitalize() + ' ' + str(self.val)
 
 
 class Conditional:

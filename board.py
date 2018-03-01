@@ -33,6 +33,20 @@ class Board:
             magnitude = -distance
         self.move(actor, magnitude)
 
+    def push(self, actor, nonactor, distance):
+        if actor.position < nonactor.position:
+            magnitude = distance
+        else:
+            magnitude = -distance
+        self.move(nonactor, magnitude)
+
+    def pull(self, actor, nonactor, distance):
+        if actor.position < nonactor.position:
+            magnitude = -distance
+        else:
+            magnitude = distance
+        self.move(nonactor, magnitude)
+
     def move(self, player, magnitude):
         if magnitude < 0:
             for i in range(magnitude, 0):
