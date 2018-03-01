@@ -104,14 +104,14 @@ class Duel:
         # print('p2 {}'.format(p2_selection))
         if p1_selection.priority > p2_selection.priority:
             self.active_p = self.p1
-            self.active_p_sel = p1_selection
+            self.active_p.active = True
             self.reactive_p = self.p2
-            self.reactive_p_sel = p2_selection
+            self.reactive_p.active = False
         elif p1_selection.priority < p2_selection.priority:
             self.active_p = self.p2
-            self.active_p_sel = p2_selection
+            self.active_p.active = True
             self.reactive_p = self.p1
-            self.reactive_p_sel = p1_selection
+            self.reactive_p.active = False
         else:  # Clash!
             # print('clash!')
             return True

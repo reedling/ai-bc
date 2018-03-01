@@ -27,6 +27,7 @@ class Player:
         self.stun_immune = False
         self.can_hit = True
         self.dodge = False
+        self.active = False
 
         if name == 'Training Dummy':
             self.character = Dummy()
