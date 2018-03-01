@@ -10,9 +10,7 @@ class Duel:
         self.board = board
         self.beat = 1
         self.active_p = None
-        self.active_p_sel = None
         self.reactive_p = None
-        self.reactive_p_sel = None
         self.winner = None
         self.loser = None
 
@@ -62,18 +60,18 @@ class Duel:
             self.coordinate_recycle()
             return
 
-        self.p1.apply_selection_modifiers(p1_selection)
-        self.p2.apply_selection_modifiers(p2_selection)
+        self.p1.selection = p1_selection
+        self.p2.selection = p2_selection
+        self.p1.apply_selection_modifiers()
+        self.p2.apply_selection_modifiers()
 
         self.coordinate_start_of_beat()
-        self.coordinate_attack(self.active_p, self.active_p_sel,
-                               self.reactive_p, self.reactive_p_sel)
-        self.coordinate_attack(self.reactive_p, self.reactive_p_sel,
-                               self.active_p, self.active_p_sel)
+        self.coordinate_attack(self.active_p, self.reactive_p)
+        self.coordinate_attack(self.reactive_p, self.active_p)
 
         # Note that recycle includes end of beat effects and
         #  UAs that apply at the end of every beat
-        # self.coordinate_end_of_beat()
+        self.coordinate_end_of_beat()
         self.coordinate_recycle()
         # print(self.board.spaces)
 
@@ -120,80 +118,71 @@ class Duel:
 
     def coordinate_start_of_beat(self):
         active_behaviors = self.active_p.get_start_of_beat(
-            self.active_p.get_possible_start_of_beat(self.active_p_sel),
-            self.state_for_player(self.active_p, self.reactive_p))
+            self.state_for_player(self.active_p, self.reactive_p)
+        )
         self.execute(active_behaviors, self.active_p, self.reactive_p)
         reactive_behaviors = self.reactive_p.get_start_of_beat(
-            self.reactive_p.get_possible_start_of_beat(self.reactive_p_sel),
-            self.state_for_player(self.reactive_p, self.active_p))
+            self.state_for_player(self.reactive_p, self.active_p)
+        )
         self.execute(reactive_behaviors, self.reactive_p, self.active_p)
 
-    def coordinate_attack(self, atkr, atkr_sel, dfdr, dfdr_sel):
+    def coordinate_attack(self, atkr, dfdr):
         if (not atkr.stunned):
-            self.coordinate_before_activating(
-                atkr, atkr_sel,
-                dfdr, dfdr_sel
-            )
-            in_range = self.board.check_range(
-                atkr, atkr_sel,
-                dfdr, dfdr_sel
-            )
+            self.coordinate_before_activating(atkr, dfdr)
+            in_range = self.board.check_range(atkr, dfdr)
 
             if in_range:
-                self.coordinate_on_hit(
-                    atkr, atkr_sel,
-                    dfdr, dfdr_sel
-                )
-                damage = self.apply_damage(
-                    atkr, atkr_sel,
-                    dfdr, dfdr_sel
-                )
+                self.coordinate_on_hit(atkr, dfdr)
+                damage = self.apply_damage(atkr, dfdr)
                 if dfdr.life <= 0:
                     self.winner = atkr
                     self.loser = dfdr
                 if damage > 0:
-                    self.coordinate_on_damage(
-                        atkr, atkr_sel,
-                        dfdr, dfdr_sel
-                    )
+                    self.coordinate_on_damage(atkr, dfdr)
 
-            self.coordinate_after_activating(
-                atkr, atkr_sel,
-                dfdr, dfdr_sel
-            )
+            self.coordinate_after_activating(atkr, dfdr)
 
-    def coordinate_before_activating(self, atkr, atkr_sel, dfdr, dfdr_sel):
+    def coordinate_before_activating(self, atkr, dfdr):
         behaviors = atkr.get_before_activating(
-            atkr.get_possible_before_activating(atkr_sel),
-            self.state_for_player(atkr, dfdr))
+            self.state_for_player(atkr, dfdr)
+        )
         self.execute(behaviors, atkr, dfdr)
 
-    def coordinate_on_hit(self, atkr, atkr_sel, dfdr, dfdr_sel):
+    def coordinate_on_hit(self, atkr, dfdr):
         behaviors = atkr.get_on_hit(
-            atkr.get_possible_on_hit(atkr_sel),
-            self.state_for_player(atkr, dfdr))
+            self.state_for_player(atkr, dfdr)
+        )
         self.execute(behaviors, atkr, dfdr)
 
-    def apply_damage(self, atkr, atkr_sel, dfdr, dfdr_sel):
-        damage = atkr_sel.power
+    def apply_damage(self, atkr, dfdr):
+        damage = atkr.selection.power
         if damage is None or damage == 0:
             return 0
 
-        damage = dfdr.handle_damage(damage, atkr_sel, dfdr_sel)
+        damage = dfdr.handle_damage(damage, atkr)
         return damage
 
-    def coordinate_on_damage(self, atkr, atkr_sel, dfdr, dfdr_sel):
+    def coordinate_on_damage(self, atkr, dfdr):
         behaviors = atkr.get_on_damage(
-            atkr.get_possible_on_damage(atkr_sel),
-            self.state_for_player(atkr, dfdr))
+            self.state_for_player(atkr, dfdr)
+        )
         self.execute(behaviors, atkr, dfdr)
-        return
 
-    def coordinate_after_activating(self, atkr, atkr_sel, dfdr, dfdr_sel):
+    def coordinate_after_activating(self, atkr, dfdr):
         behaviors = atkr.get_after_activating(
-            atkr.get_possible_after_activating(atkr_sel),
-            self.state_for_player(atkr, dfdr))
+            self.state_for_player(atkr, dfdr)
+        )
         self.execute(behaviors, atkr, dfdr)
+
+    def coordinate_end_of_beat(self):
+        active_behaviors = self.active_p.get_end_of_beat(
+            self.state_for_player(self.active_p, self.reactive_p)
+        )
+        self.execute(active_behaviors, self.active_p, self.reactive_p)
+        reactive_behaviors = self.reactive_p.get_end_of_beat(
+            self.state_for_player(self.reactive_p, self.active_p)
+        )
+        self.execute(reactive_behaviors, self.reactive_p, self.active_p)
 
     def coordinate_recycle(self):
         if self.we_have_a_winner():

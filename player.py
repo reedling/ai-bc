@@ -20,6 +20,7 @@ class Player:
         # self.discarded_other = deque()
         self.played_styles = []
         self.played_bases = []
+        self.selection = None
         self.soak = 0
         self.stunned = False
         self.stun_guard = 0
@@ -84,6 +85,7 @@ class Player:
         self.discard_base(self.played_bases.pop())
         self.played_styles = []
         self.played_bases = []
+        self.selection = None
 
     def get_selection(self, state):
         stylei = choice(self.available_styles)
@@ -119,7 +121,8 @@ class Player:
             self.character.bases, self.discarded_bases, self.played_bases
         )) > 0
 
-    def apply_selection_modifiers(self, selection):
+    def apply_selection_modifiers(self):
+        selection = self.selection
         for mod in selection.modifiers:
             if hasattr(self, mod):
                 if stacks(mod):
@@ -128,43 +131,31 @@ class Player:
                 else:
                     setattr(self, mod, selection.modifiers[mod])
 
-    def get_possible_start_of_beat(self, selection):
-        return get_possible_behaviors(selection, 'startOfBeat')
+    def get_start_of_beat(self, state):
+        possible = get_possible_behaviors(self.selection, 'startOfBeat')
+        return choose_random_valid_behavior(possible, state)
 
-    def get_start_of_beat(self, possible_behaviors, state):
-        return choose_random_valid_behavior(possible_behaviors, state)
+    def get_before_activating(self, state):
+        possible = get_possible_behaviors(self.selection, 'beforeActivating')
+        return choose_random_valid_behavior(possible, state)
 
-    def get_possible_before_activating(self, selection):
-        return get_possible_behaviors(selection, 'beforeActivating')
+    def get_on_hit(self, state):
+        possible = get_possible_behaviors(self.selection, 'onHit')
+        return choose_random_valid_behavior(possible, state)
 
-    def get_before_activating(self, possible_behaviors, state):
-        return choose_random_valid_behavior(possible_behaviors, state)
+    def get_on_damage(self, state):
+        possible = get_possible_behaviors(self.selection, 'onDamage')
+        return choose_random_valid_behavior(possible, state)
 
-    def get_possible_on_hit(self, selection):
-        return get_possible_behaviors(selection, 'onHit')
+    def get_after_activating(self, state):
+        possible = get_possible_behaviors(self.selection, 'afterActivating')
+        return choose_random_valid_behavior(possible, state)
 
-    def get_on_hit(self, possible_behaviors, state):
-        return choose_random_valid_behavior(possible_behaviors, state)
+    def get_end_of_beat(self, state):
+        possible = get_possible_behaviors(self.selection, 'endOfBeat')
+        return choose_random_valid_behavior(possible, state)
 
-    def get_possible_on_damage(self, selection):
-        return get_possible_behaviors(selection, 'onDamage')
-
-    def get_on_damage(self, possible_behaviors, state):
-        return choose_random_valid_behavior(possible_behaviors, state)
-
-    def get_possible_after_activating(self, selection):
-        return get_possible_behaviors(selection, 'afterActivating')
-
-    def get_after_activating(self, possible_behaviors, state):
-        return choose_random_valid_behavior(possible_behaviors, state)
-
-    def get_possible_end_of_beat(self, selection):
-        return get_possible_behaviors(selection, 'endOfBeat')
-
-    def get_end_of_beat(self, possible_behaviors, state):
-        return choose_random_valid_behavior(possible_behaviors, state)
-
-    def handle_damage(self, damage, attack, defense):
+    def handle_damage(self, damage, attacker):
         if damage > 0:
             damage = self.soak_damage(damage)
             if damage > self.stun_guard and not self.stun_immune:

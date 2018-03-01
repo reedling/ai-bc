@@ -3,8 +3,8 @@ class Board:
         self.spaces = [{} for i in range(7)]
 
     # Will return True if in range.  False otherwise.
-    def check_range(self, atkr, atkr_sel, dfdr, dfdr_sel):
-        targetable = self.get_positions_in_range(atkr, atkr_sel)
+    def check_range(self, atkr, dfdr):
+        targetable = self.get_positions_in_range(atkr)
         if targetable is None:
             return False
         for dist in targetable:
@@ -12,8 +12,8 @@ class Board:
                 return True
         return False
 
-    def get_positions_in_range(self, atkr, atkr_sel):
-        atk_range = atkr_sel.atk_range
+    def get_positions_in_range(self, atkr):
+        atk_range = atkr.selection.atk_range
         return atk_range
 
     def retreat(self, actor, nonactor, distance):
