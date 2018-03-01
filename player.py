@@ -5,7 +5,7 @@ from character_utils import character_by_name
 from dummy import DummyAgent, Dummy
 from pair import Pair
 from user import UserAgent
-from utils import get_available_indices
+from utils import get_available_indices, stacks
 
 
 class Player:
@@ -22,6 +22,8 @@ class Player:
         self.stunned = False
         self.stun_guard = 0
         self.stun_immune = False
+        self.can_hit = True
+        self.dodge = False
 
         if name == 'Training Dummy':
             self.character = Dummy()
@@ -42,6 +44,10 @@ class Player:
 
     def refresh(self):
         self.stunned = False
+        self.stun_guard = 0
+        self.stun_immune = False
+        self.can_hit = True
+        self.dodge = False
 
     def get_ante(self, info):
         return None
@@ -109,6 +115,15 @@ class Player:
         return len(get_available_indices(
             self.character.bases, self.discarded_bases, self.played_bases
         )) > 0
+
+    def apply_selection_modifiers(self, selection):
+        for mod in selection.modifiers:
+            if hasattr(self, mod):
+                if stacks(mod):
+                    curr = getattr(self, mod)
+                    setattr(self, mod, curr + selection.modifiers[mod])
+                else:
+                    setattr(self, mod, selection.modifiers[mod])
 
     def get_possible_start_of_beat(self, selection):
         possible = []

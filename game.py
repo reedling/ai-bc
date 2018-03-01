@@ -65,6 +65,9 @@ class Duel:
             self.coordinate_recycle()
             return
 
+        self.p1.apply_selection_modifiers(p1_selection)
+        self.p2.apply_selection_modifiers(p2_selection)
+
         self.coordinate_start_of_beat()
         self.coordinate_attack(self.active_p, self.active_p_sel,
                                self.reactive_p, self.reactive_p_sel)

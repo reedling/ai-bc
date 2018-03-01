@@ -1,5 +1,7 @@
 from random import randint
 
+from utils import stacks
+
 
 class Pair:
     def __init__(self, style, base):
@@ -26,6 +28,21 @@ class Pair:
             return None
         else:
             return self.style.power + self.base.power
+
+    @property
+    def modifiers(self):
+        mods = {}
+        for sm in self.style.effects.modifiers:
+            if stacks(sm.mtype) and sm.mtype in mods:
+                mods[sm.mtype] += sm.val
+            else:
+                mods[sm.mtype] = sm.val
+        for bm in self.base.effects.modifiers:
+            if stacks(bm.mtype) and bm.mtype in mods:
+                mods[bm.mtype] += bm.val
+            else:
+                mods[bm.mtype] = bm.val
+        return mods
 
     def get_effects(self, trigger):
         effs = []
