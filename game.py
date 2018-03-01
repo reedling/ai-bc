@@ -37,18 +37,7 @@ class Duel:
             if self.winner is None:
                 self.beat += 1
 
-        if self.winner is None:
-            if self.p1.life > self.p2.life:
-                print('{} BEAT {}'.format(self.p1, self.p2))
-            elif self.p1.life < self.p2.life:
-                print('{} BEAT {}'.format(self.p2, self.p1))
-            else:  # Equal life in this case
-                if self.reactive_p is not None:
-                    print('{} BEAT {}'.format(self.reactive_p, self.active_p))
-                else:
-                    print('{} TIED {}'.format(self.p1, self.p2))
-        else:
-            print('{} BEAT {}'.format(self.winner, self.loser))
+        self.handle_duel_end()
 
     def coordinate_beat(self):
         # print('beat {}'.format(self.beat))
@@ -223,3 +212,20 @@ class Duel:
 
     def we_have_a_winner(self):
         return self.winner is not None
+
+    def handle_duel_end(self):
+        m = '{} {} {}'
+        m_reactive = m + ' - as Reactive Player on last turn'
+        m_early = m + ' - on beat {}'
+        if self.winner is None:
+            if self.p1.life > self.p2.life:
+                print(m.format(self.p1, 'BEAT', self.p2))
+            elif self.p1.life < self.p2.life:
+                print(m.format(self.p2, 'BEAT', self.p1))
+            else:  # Equal life in this case
+                if self.reactive_p is not None:
+                    print(m.format(self.reactive_p, 'BEAT', self.active_p))
+                else:
+                    print(m_reactive.format(self.p1, 'BEAT', self.p2))
+        else:
+            print(m_early.format(self.winner, 'BEAT', self.loser, self.beat))
