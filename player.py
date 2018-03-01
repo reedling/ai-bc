@@ -1,11 +1,12 @@
 from collections import deque
-from random import choice, shuffle
+from random import choice
 
 from character_utils import character_by_name
 from dummy import DummyAgent, Dummy
 from pair import Pair
 from user import UserAgent
-from utils import get_available_indices, stacks
+from utils import (choose_random_valid_behavior, get_possible_behaviors,
+                   get_available_indices, stacks)
 
 
 class Player:
@@ -128,79 +129,40 @@ class Player:
                     setattr(self, mod, selection.modifiers[mod])
 
     def get_possible_start_of_beat(self, selection):
-        possible = []
-        effects = selection.get_effects('startOfBeat')
-        for effect in effects:
-            for action in effect.actions:
-                possible.append(action.behaviors)
-        return possible
+        return get_possible_behaviors(selection, 'startOfBeat')
 
     def get_start_of_beat(self, possible_behaviors, state):
-        chosen = []
-        indices = [x for x in range(0, len(possible_behaviors))]
-        for i in indices:
-            chosen.append(choice(possible_behaviors[i]))
-        return chosen
+        return choose_random_valid_behavior(possible_behaviors)
 
     def get_possible_before_activating(self, selection):
-        possible = []
-        effects = selection.get_effects('beforeActivating')
-        for effect in effects:
-            for action in effect.actions:
-                possible.append(action.behaviors)
-        return possible
+        return get_possible_behaviors(selection, 'beforeActivating')
 
     def get_before_activating(self, possible_behaviors, state):
-        chosen = []
-        indices = [x for x in range(0, len(possible_behaviors))]
-        for i in indices:
-            chosen.append(choice(possible_behaviors[i]))
-        return chosen
+        return choose_random_valid_behavior(possible_behaviors)
 
     def get_possible_on_hit(self, selection):
-        possible = []
-        effects = selection.get_effects('onHit')
-        for effect in effects:
-            for action in effect.actions:
-                possible.append(action.behaviors)
-        return possible
+        return get_possible_behaviors(selection, 'onHit')
 
     def get_on_hit(self, possible_behaviors, state):
-        chosen = []
-        indices = [x for x in range(0, len(possible_behaviors))]
-        for i in indices:
-            chosen.append(choice(possible_behaviors[i]))
-        return chosen
+        return choose_random_valid_behavior(possible_behaviors)
 
     def get_possible_on_damage(self, selection):
-        possible = []
-        effects = selection.get_effects('onDamage')
-        for effect in effects:
-            for action in effect.actions:
-                possible.append(action.behaviors)
-        return possible
+        return get_possible_behaviors(selection, 'onDamage')
 
     def get_on_damage(self, possible_behaviors, state):
-        chosen = []
-        indices = [x for x in range(0, len(possible_behaviors))]
-        for i in indices:
-            chosen.append(choice(possible_behaviors[i]))
-        return chosen
+        return choose_random_valid_behavior(possible_behaviors)
 
     def get_possible_after_activating(self, selection):
-        possible = []
-        effects = selection.get_effects('afterActivating')
-        for effect in effects:
-            for action in effect.actions:
-                possible.append(action.behaviors)
-        return possible
+        return get_possible_behaviors(selection, 'afterActivating')
 
     def get_after_activating(self, possible_behaviors, state):
-        chosen = []
-        indices = [x for x in range(0, len(possible_behaviors))]
-        for i in indices:
-            chosen.append(choice(possible_behaviors[i]))
-        return chosen
+        return choose_random_valid_behavior(possible_behaviors)
+
+    def get_possible_end_of_beat(self, selection):
+        return get_possible_behaviors(selection, 'endOfBeat')
+
+    def get_end_of_beat(self, possible_behaviors, state):
+        return choose_random_valid_behavior(possible_behaviors)
 
     def handle_damage(self, damage, attack, defense):
         if damage > 0:

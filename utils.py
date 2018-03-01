@@ -1,3 +1,5 @@
+from random import choice
+
 from card import Base
 from card_logic import Action, Conditional, Effects, Modifier, Trigger
 
@@ -48,6 +50,23 @@ def get_standard_bases():
     ]
 
 
+def get_possible_behaviors(selection, trigger):
+    possible = []
+    effects = selection.get_effects(trigger)
+    for effect in effects:
+        for action in effect.actions:
+            possible.append(action.behaviors)
+    return possible
+
+
+def choose_random_valid_behavior(possible_behaviors):
+    chosen = []
+    indices = [x for x in range(0, len(possible_behaviors))]
+    for i in indices:
+        chosen.append(choice(possible_behaviors[i]))
+    return chosen
+
+
 def stacks(mod):
     return mod in [
         'soak',
@@ -60,4 +79,5 @@ def left_of_opponent(state):
 
 
 def get_available_indices(full_opts, discarded, played):
-    return [x for x in range(len(full_opts)) if x not in discarded and x not in played]
+    rng = range(len(full_opts))
+    return [x for x in rng if x not in discarded and x not in played]
