@@ -1,6 +1,3 @@
-from copy import copy
-
-
 class Board:
     def __init__(self):
         self.spaces = [{} for i in range(7)]
@@ -91,4 +88,8 @@ class Board:
 
     @property
     def status(self):
-        return copy(self.spaces)
+        rep = [{} for i in range(len(self.spaces))]
+        for j in range(len(rep)):
+            if 'player' in self.spaces[j]:
+                rep[j]['player'] = self.spaces[j]['player'].name
+        return rep

@@ -132,37 +132,37 @@ class Player:
         return get_possible_behaviors(selection, 'startOfBeat')
 
     def get_start_of_beat(self, possible_behaviors, state):
-        return choose_random_valid_behavior(possible_behaviors)
+        return choose_random_valid_behavior(possible_behaviors, state)
 
     def get_possible_before_activating(self, selection):
         return get_possible_behaviors(selection, 'beforeActivating')
 
     def get_before_activating(self, possible_behaviors, state):
-        return choose_random_valid_behavior(possible_behaviors)
+        return choose_random_valid_behavior(possible_behaviors, state)
 
     def get_possible_on_hit(self, selection):
         return get_possible_behaviors(selection, 'onHit')
 
     def get_on_hit(self, possible_behaviors, state):
-        return choose_random_valid_behavior(possible_behaviors)
+        return choose_random_valid_behavior(possible_behaviors, state)
 
     def get_possible_on_damage(self, selection):
         return get_possible_behaviors(selection, 'onDamage')
 
     def get_on_damage(self, possible_behaviors, state):
-        return choose_random_valid_behavior(possible_behaviors)
+        return choose_random_valid_behavior(possible_behaviors, state)
 
     def get_possible_after_activating(self, selection):
         return get_possible_behaviors(selection, 'afterActivating')
 
     def get_after_activating(self, possible_behaviors, state):
-        return choose_random_valid_behavior(possible_behaviors)
+        return choose_random_valid_behavior(possible_behaviors, state)
 
     def get_possible_end_of_beat(self, selection):
         return get_possible_behaviors(selection, 'endOfBeat')
 
     def get_end_of_beat(self, possible_behaviors, state):
-        return choose_random_valid_behavior(possible_behaviors)
+        return choose_random_valid_behavior(possible_behaviors, state)
 
     def handle_damage(self, damage, attack, defense):
         if damage > 0:

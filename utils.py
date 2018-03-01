@@ -59,11 +59,18 @@ def get_possible_behaviors(selection, trigger):
     return possible
 
 
-def choose_random_valid_behavior(possible_behaviors):
+def choose_random_valid_behavior(possible_behaviors, state):
     chosen = []
     indices = [x for x in range(0, len(possible_behaviors))]
     for i in indices:
-        chosen.append(choice(possible_behaviors[i]))
+        opt = None
+        while len(possible_behaviors[i]) > 0 and opt is None:
+            opt = choice(possible_behaviors[i])
+            # print(state.board)
+
+        if opt is not None:
+            chosen.append(opt)
+            # update state so we can choose valid actions
     return chosen
 
 
