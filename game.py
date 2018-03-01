@@ -160,10 +160,10 @@ class Duel:
                         dfdr, dfdr_sel
                     )
 
-            # self.coordinate_after_activating(
-            #     atkr, atkr_sel,
-            #     dfdr, dfdr_sel
-            # )
+            self.coordinate_after_activating(
+                atkr, atkr_sel,
+                dfdr, dfdr_sel
+            )
 
     def coordinate_before_activating(self, atkr, atkr_sel, dfdr, dfdr_sel):
         behaviors = atkr.get_before_activating(
@@ -191,6 +191,12 @@ class Duel:
             self.state_for_player(atkr, dfdr))
         self.execute(behaviors, atkr, dfdr)
         return
+
+    def coordinate_after_activating(self, atkr, atkr_sel, dfdr, dfdr_sel):
+        behaviors = atkr.get_after_activating(
+            atkr.get_possible_after_activating(atkr_sel),
+            self.state_for_player(atkr, dfdr))
+        self.execute(behaviors, atkr, dfdr)
 
     def coordinate_recycle(self):
         if self.we_have_a_winner():

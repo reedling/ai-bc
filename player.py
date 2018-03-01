@@ -187,14 +187,27 @@ class Player:
             chosen.append(choice(possible_behaviors[i]))
         return chosen
 
+    def get_possible_after_activating(self, selection):
+        possible = []
+        effects = selection.get_effects('afterActivating')
+        for effect in effects:
+            for action in effect.actions:
+                possible.append(action.behaviors)
+        return possible
+
+    def get_after_activating(self, possible_behaviors, state):
+        chosen = []
+        indices = [x for x in range(0, len(possible_behaviors))]
+        for i in indices:
+            chosen.append(choice(possible_behaviors[i]))
+        return chosen
+
     def handle_damage(self, damage, attack, defense):
         if damage > 0:
             damage = self.soak_damage(damage)
             if damage > self.stun_guard and not self.stun_immune:
                 self.stunned = True
-
             self.life -= damage
-
         return damage
 
     # Returns leftover un-soaked damage
