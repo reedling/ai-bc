@@ -154,15 +154,11 @@ class Duel:
                 if dfdr.life <= 0:
                     self.winner = atkr
                     self.loser = dfdr
-            #     if damage > 0:
-            #         self.coordinate_on_damage(
-            #             atkr, atkr_sel,
-            #             dfdr, dfdr_sel
-            #         )
-            #         self.apply_stun(
-            #             atkr, atkr_sel,
-            #             dfdr, dfdr_sel
-            #         )
+                if damage > 0:
+                    self.coordinate_on_damage(
+                        atkr, atkr_sel,
+                        dfdr, dfdr_sel
+                    )
 
             # self.coordinate_after_activating(
             #     atkr, atkr_sel,
@@ -186,8 +182,15 @@ class Duel:
         if damage is None or damage == 0:
             return 0
 
-        dfdr.handle_damage(damage, atkr_sel, dfdr_sel)
+        damage = dfdr.handle_damage(damage, atkr_sel, dfdr_sel)
         return damage
+
+    def coordinate_on_damage(self, atkr, atkr_sel, dfdr, dfdr_sel):
+        behaviors = atkr.get_on_damage(
+            atkr.get_possible_on_damage(atkr_sel),
+            self.state_for_player(atkr, dfdr))
+        self.execute(behaviors, atkr, dfdr)
+        return
 
     def coordinate_recycle(self):
         if self.we_have_a_winner():
@@ -229,7 +232,7 @@ class Duel:
             return
 
         m = '{} {} {}'
-        m_reactive = m + ' - as Reactive Player on last turn'
+        m_r = m + ' - as Reactive Player on last turn'
         m_early = m + ' - on beat {}'
         if self.winner is None:
             if self.p1.life > self.p2.life:
@@ -238,8 +241,8 @@ class Duel:
                 print(m.format(self.p2, 'BEAT', self.p1))
             else:  # Equal life in this case
                 if self.reactive_p is not None:
-                    print(m.format(self.reactive_p, 'BEAT', self.active_p))
+                    print(m_r.format(self.reactive_p, 'BEAT', self.active_p))
                 else:
-                    print(m_reactive.format(self.p1, 'BEAT', self.p2))
+                    print(m.format(self.p1, 'TIED', self.p2))
         else:
             print(m_early.format(self.winner, 'BEAT', self.loser, self.beat))

@@ -19,6 +19,7 @@ class Player:
         # self.discarded_other = deque()
         self.played_styles = []
         self.played_bases = []
+        self.soak = 0
         self.stunned = False
         self.stun_guard = 0
         self.stun_immune = False
@@ -43,6 +44,7 @@ class Player:
         return self.name + '(' + str(self.life) + ')'
 
     def refresh(self):
+        self.soak = 0
         self.stunned = False
         self.stun_guard = 0
         self.stun_immune = False
@@ -170,8 +172,35 @@ class Player:
             chosen.append(choice(possible_behaviors[i]))
         return chosen
 
+    def get_possible_on_damage(self, selection):
+        possible = []
+        effects = selection.get_effects('onDamage')
+        for effect in effects:
+            for action in effect.actions:
+                possible.append(action.behaviors)
+        return possible
+
+    def get_on_damage(self, possible_behaviors, state):
+        chosen = []
+        indices = [x for x in range(0, len(possible_behaviors))]
+        for i in indices:
+            chosen.append(choice(possible_behaviors[i]))
+        return chosen
+
     def handle_damage(self, damage, attack, defense):
-        self.life -= damage
         if damage > 0:
+            damage = self.soak_damage(damage)
             if damage > self.stun_guard and not self.stun_immune:
                 self.stunned = True
+
+            self.life -= damage
+
+        return damage
+
+    # Returns leftover un-soaked damage
+    def soak_damage(self, damage):
+        damage = damage - self.soak
+        if damage > 0:
+            return damage
+        else:
+            return 0
