@@ -35,7 +35,7 @@ class Player:
                 self.agent = UserAgent()
 
     def __str__(self):
-        return self.name
+        return self.name + '(' + str(self.life) + ')'
 
     def get_ante(self, info):
         return None
@@ -133,6 +133,24 @@ class Player:
         for i in indices:
             chosen.append(choice(possible_behaviors[i]))
         return chosen
+
+    def get_possible_on_hit(self, selection):
+        possible = []
+        effects = selection.get_effects('onHit')
+        for effect in effects:
+            for action in effect.actions:
+                possible.append(action.behaviors)
+        return possible
+
+    def get_on_hit(self, possible_behaviors, state):
+        chosen = []
+        indices = [x for x in range(0, len(possible_behaviors))]
+        for i in indices:
+            chosen.append(choice(possible_behaviors[i]))
+        return chosen
+
+    def handle_damage(self, damage, attack, defense):
+        self.life -= damage
 
     @property
     def stunned(self):

@@ -20,6 +20,13 @@ class Pair:
                 distances.append(style_dist + base_dist)
         return sorted(set(distances))
 
+    @property
+    def power(self):
+        if self.style.power is None or self.base.power is None:
+            return None
+        else:
+            return self.style.power + self.base.power
+
     def get_effects(self, trigger):
         effs = []
         for st in self.style.effects.triggers:

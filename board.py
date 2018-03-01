@@ -8,10 +8,16 @@ class Board:
     # Will return True if in range.  False otherwise.
     def check_range(self, atkr, atkr_sel, dfdr, dfdr_sel):
         targetable = self.get_positions_in_range(atkr, atkr_sel)
+        if targetable is None:
+            return False
+        for dist in targetable:
+            if abs(atkr.position - dfdr.position) == dist:
+                return True
+        return False
 
     def get_positions_in_range(self, atkr, atkr_sel):
         atk_range = atkr_sel.atk_range
-        print(atk_range)
+        return atk_range
 
     def retreat(self, actor, nonactor, distance):
         if actor.position < nonactor.position:

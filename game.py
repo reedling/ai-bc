@@ -11,6 +11,8 @@ class Duel:
         self.active_p_sel = None
         self.reactive_p = None
         self.reactive_p_sel = None
+        self.winner = None
+        self.loser = None
 
     def state_for_player(self, player, oppo):
         return {
@@ -31,7 +33,22 @@ class Duel:
                and self.p2.life > 0
                and self.beat < 16):
             self.coordinate_beat()
-            self.beat += 1
+
+            if self.winner is None:
+                self.beat += 1
+
+        if self.winner is None:
+            if self.p1.life > self.p2.life:
+                print('{} BEAT {}'.format(self.p1, self.p2))
+            elif self.p1.life < self.p2.life:
+                print('{} BEAT {}'.format(self.p2, self.p1))
+            else:  # Equal life in this case
+                if self.reactive_p is not None:
+                    print('{} BEAT {}'.format(self.reactive_p, self.active_p))
+                else:
+                    print('{} TIED {}'.format(self.p1, self.p2))
+        else:
+            print('{} BEAT {}'.format(self.winner, self.loser))
 
     def coordinate_beat(self):
         # print('beat {}'.format(self.beat))
@@ -125,10 +142,37 @@ class Duel:
                 atkr, atkr_sel,
                 dfdr, dfdr_sel
             )
-            self.board.check_range(
+            in_range = self.board.check_range(
                 atkr, atkr_sel,
                 dfdr, dfdr_sel
             )
+
+            if in_range:
+                self.coordinate_on_hit(
+                    atkr, atkr_sel,
+                    dfdr, dfdr_sel
+                )
+                damage = self.apply_damage(
+                    atkr, atkr_sel,
+                    dfdr, dfdr_sel
+                )
+                if dfdr.life <= 0:
+                    self.winner = atkr
+                    self.loser = dfdr
+            #     if damage > 0:
+            #         self.coordinate_on_damage(
+            #             atkr, atkr_sel,
+            #             dfdr, dfdr_sel
+            #         )
+            #         self.apply_stun(
+            #             atkr, atkr_sel,
+            #             dfdr, dfdr_sel
+            #         )
+
+            # self.coordinate_after_activating(
+            #     atkr, atkr_sel,
+            #     dfdr, dfdr_sel
+            # )
 
     def coordinate_before_activating(self, atkr, atkr_sel, dfdr, dfdr_sel):
         behaviors = atkr.get_before_activating(
@@ -136,7 +180,24 @@ class Duel:
             self.state_for_player(atkr, dfdr))
         self.execute(behaviors, atkr, dfdr)
 
+    def coordinate_on_hit(self, atkr, atkr_sel, dfdr, dfdr_sel):
+        behaviors = atkr.get_on_hit(
+            atkr.get_possible_on_hit(atkr_sel),
+            self.state_for_player(atkr, dfdr))
+        self.execute(behaviors, atkr, dfdr)
+
+    def apply_damage(self, atkr, atkr_sel, dfdr, dfdr_sel):
+        damage = atkr_sel.power
+        if damage is None or damage == 0:
+            return 0
+
+        dfdr.handle_damage(damage, atkr_sel, dfdr_sel)
+        return damage
+
     def coordinate_recycle(self):
+        if self.we_have_a_winner():
+            return  # skip if we have a winner
+
         if self.active_p is None:
             val = randint(0, 1)
             if val == 0:
@@ -159,3 +220,6 @@ class Duel:
 
         for b in behaviors:
             ex(b)
+
+    def we_have_a_winner(self):
+        return self.winner is not None
