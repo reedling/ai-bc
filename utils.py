@@ -1,4 +1,4 @@
-from random import choice
+from random import choice, shuffle
 
 from card import Base
 from card_logic import Action, Conditional, Effects, Modifier, Trigger
@@ -62,11 +62,14 @@ def get_possible_behaviors(selection, trigger):
 def choose_random_valid_behavior(possible_behaviors, state):
     chosen = []
     indices = [x for x in range(0, len(possible_behaviors))]
+    shuffle(indices)
     for i in indices:
         opt = None
         while len(possible_behaviors[i]) > 0 and opt is None:
             opt = choice(possible_behaviors[i])
-            # print(state.board)
+            if not state.permits(opt):
+                possible_behaviors[i].remove(opt)
+                opt = None
 
         if opt is not None:
             chosen.append(opt)

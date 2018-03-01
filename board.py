@@ -2,6 +2,10 @@ class Board:
     def __init__(self):
         self.spaces = [{} for i in range(7)]
 
+    @property
+    def length(self):
+        return len(self.spaces)
+
     # Will return True if in range.  False otherwise.
     def check_range(self, atkr, dfdr):
         targetable = self.get_positions_in_range(atkr)
@@ -51,7 +55,7 @@ class Board:
                     self.set(player, player.position - 1, 'left')
         else:
             for i in range(magnitude):
-                if player.position < len(self.spaces) - 1:
+                if player.position < self.length - 1:
                     self.set(player, player.position + 1, 'right')
 
     def teleport(self, player, position):
@@ -67,7 +71,7 @@ class Board:
                         print('Tried to jump over player at ' + str(position)
                               + ', but already at left edge of the board.')
                 elif direction is 'right':
-                    if position < len(self.spaces) - 1:
+                    if position < self.length - 1:
                         self.set(player, position + 1, 'right')
                     else:
                         print('Tried to jump over player at ' + str(position)
@@ -88,8 +92,8 @@ class Board:
 
     @property
     def status(self):
-        rep = [{} for i in range(len(self.spaces))]
-        for j in range(len(rep)):
+        rep = [{} for i in range(self.length)]
+        for j in range(self.length):
             if 'player' in self.spaces[j]:
                 rep[j]['player'] = self.spaces[j]['player'].name
         return rep

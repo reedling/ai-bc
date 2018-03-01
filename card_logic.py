@@ -56,6 +56,14 @@ class Behavior:
     def __str__(self):
         return self.btype.capitalize() + ' ' + str(self.val)
 
+    def is_move(self):
+        return self.btype in [
+            'advance',
+            'retreat',
+            'push',
+            'pull'
+        ]
+
 
 class Conditional:
     def __init__(self, test_fn, if_result=None, else_result=None):
