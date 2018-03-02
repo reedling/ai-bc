@@ -122,6 +122,11 @@ class Player:
             self.character.bases, self.discarded_bases, self.played_bases
         )) > 0
 
+    def apply_reveal_effects(self):
+        # need to implement this
+        # will probably need game state
+        return
+
     def apply_selection_modifiers(self):
         selection = self.selection
         for mod in selection.modifiers:

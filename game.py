@@ -95,8 +95,17 @@ class Duel:
         # Will need to apply special handling for Special Actions
         # Will need to take into account special modifiers
         #    outside of the styles/bases themselves as well
-        # Apply reveal effects for last active player (or randomly choose)
-        # Apply reveal effects for reactive player
+        if self.active_p is None:
+            val = randint(0, 1)
+            if val == 0:
+                self.p1.apply_reveal_effects()
+                self.p2.apply_reveal_effects()
+            else:
+                self.p2.apply_reveal_effects()
+                self.p1.apply_reveal_effects()
+        else:
+            self.active_p.apply_reveal_effects()
+            self.reactive_p.apply_reveal_effects()
         return self.handle_priority_selection(p1_selection, p2_selection)
 
     def handle_priority_selection(self, p1_selection, p2_selection):
