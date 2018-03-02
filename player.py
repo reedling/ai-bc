@@ -127,15 +127,18 @@ class Player:
         # will probably need game state
         return
 
+    def apply_modifier(self, mod, val):
+        if hasattr(self, mod):
+            if stacks(mod):
+                curr = getattr(self, mod)
+                setattr(self, mod, curr + val)
+            else:
+                setattr(self, mod, val)
+
     def apply_selection_modifiers(self):
         selection = self.selection
         for mod in selection.modifiers:
-            if hasattr(self, mod):
-                if stacks(mod):
-                    curr = getattr(self, mod)
-                    setattr(self, mod, curr + selection.modifiers[mod])
-                else:
-                    setattr(self, mod, selection.modifiers[mod])
+            self.apply_modifier(mod, selection.modifiers[mod])
 
     def get_start_of_beat(self, state):
         possible = get_possible_behaviors(self.selection, 'startOfBeat')

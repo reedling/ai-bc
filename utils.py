@@ -12,6 +12,7 @@ def get_standard_bases():
                 Trigger('afterActivating', [
                     Action('move', [1, 2, 3], [
                         Conditional(
+                            'changes',
                             lambda state: left_of_opponent(state),
                             Effects([
                                 Modifier('dodge', True)

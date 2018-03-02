@@ -22,20 +22,19 @@ class Action:
         self.opts = opts
         self.conditionals = conditionals
 
-    @staticmethod
-    def get_behaviors(atype, magnitude):
+    def get_behaviors(self, atype, magnitude):
         if atype == 'grapple':
             return [
-                Behavior('push', magnitude),
-                Behavior('pull', magnitude),
+                Behavior('push', magnitude, self.conditionals),
+                Behavior('pull', magnitude, self.conditionals),
             ]
         elif atype == 'move':
             return [
-                Behavior('advance', magnitude),
-                Behavior('retreat', magnitude)
+                Behavior('advance', magnitude, self.conditionals),
+                Behavior('retreat', magnitude, self.conditionals)
             ]
         else:
-            return [Behavior(atype, magnitude)]
+            return [Behavior(atype, magnitude, self.conditionals)]
 
     @property
     def behaviors(self):
@@ -49,9 +48,10 @@ class Action:
 
 
 class Behavior:
-    def __init__(self, btype, val):
+    def __init__(self, btype, val, conditionals):
         self.btype = btype
         self.val = val
+        self.conditionals = conditionals
 
     def __str__(self):
         return self.btype.capitalize() + ' ' + str(self.val)
@@ -66,8 +66,8 @@ class Behavior:
 
 
 class Conditional:
-    def __init__(self, test_fn, if_result=None, else_result=None):
-        # Call test_fn before and after -- checking equality of results
+    def __init__(self, expected_val, test_fn, if_result=None, else_result=None):
+        self.expected_val = expected_val
         self.test_fn = test_fn
         self.if_result = if_result
         self.else_result = else_result

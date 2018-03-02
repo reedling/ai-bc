@@ -210,19 +210,50 @@ class Duel:
             self.reactive_p.recycle()
 
     def execute(self, behaviors, actor, nonactor):
+        # should move this handling into the conditional itself
+        def ex_with_conditionals(behavior, behavior_execution):
+            if len(behavior.conditionals) == 0:
+                behavior_execution()
+            else:
+                for c in behavior.conditionals:
+                    if c.expected_val == 'changes':
+                        before = c.test_fn(self.state_for_player(actor, nonactor))
+                        behavior_execution()
+                        after = c.test_fn(self.state_for_player(actor, nonactor))
+                        if (before != after):
+                            self.handle_effects(c.if_result, actor, nonactor)
+                        else:
+                            self.handle_effects(c.else_result, actor, nonactor)
+
         def ex(behavior):
-            # print(behavior)
             if behavior.btype == 'advance':
-                self.board.advance(actor, nonactor, behavior.val)
+                ex_with_conditionals(
+                    behavior,
+                    lambda: self.board.advance(actor, nonactor, behavior.val)
+                )
             elif behavior.btype == 'retreat':
-                self.board.retreat(actor, nonactor, behavior.val)
+                ex_with_conditionals(
+                    behavior,
+                    lambda: self.board.retreat(actor, nonactor, behavior.val)
+                )
             elif behavior.btype == 'push':
-                self.board.push(actor, nonactor, behavior.val)
+                ex_with_conditionals(
+                    behavior,
+                    lambda: self.board.push(actor, nonactor, behavior.val)
+                )
             elif behavior.btype == 'pull':
-                self.board.pull(actor, nonactor, behavior.val)
+                ex_with_conditionals(
+                    behavior,
+                    lambda: self.board.pull(actor, nonactor, behavior.val)
+                )
 
         for b in behaviors:
             ex(b)
+
+    def handle_effects(self, effects, actor, nonactor):
+        # add get_modifiers() method to Effects class
+        # use it here and in pair.py's 'modifiers' property
+        return
 
     def we_have_a_winner(self):
         return self.winner is not None
