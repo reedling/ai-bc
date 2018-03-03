@@ -66,8 +66,8 @@ class Behavior:
 
 
 class Conditional:
-    def __init__(self, expected_val, test_fn, if_result=None, else_result=None):
+    def __init__(self, expected_val, fn, if_result=None, else_result=None):
         self.expected_val = expected_val
-        self.test_fn = test_fn
+        self.fn = fn
         self.if_result = if_result
         self.else_result = else_result

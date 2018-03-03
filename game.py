@@ -1,6 +1,7 @@
 from random import randint
 
 from state import State
+from utils import stacks
 
 
 class Duel:
@@ -138,17 +139,16 @@ class Duel:
     def coordinate_attack(self, atkr, dfdr):
         if (not atkr.stunned):
             self.coordinate_before_activating(atkr, dfdr)
-            in_range = self.board.check_range(atkr, dfdr)
-
-            if in_range:
-                self.coordinate_on_hit(atkr, dfdr)
-                damage = self.apply_damage(atkr, dfdr)
-                if dfdr.life <= 0:
-                    self.winner = atkr
-                    self.loser = dfdr
-                if damage > 0:
-                    self.coordinate_on_damage(atkr, dfdr)
-
+            if atkr.can_hit:
+                in_range = self.board.check_range(atkr, dfdr)
+                if in_range and not dfdr.dodge:
+                    self.coordinate_on_hit(atkr, dfdr)
+                    damage = self.apply_damage(atkr, dfdr)
+                    if dfdr.life <= 0:
+                        self.winner = atkr
+                        self.loser = dfdr
+                    if damage > 0:
+                        self.coordinate_on_damage(atkr, dfdr)
             self.coordinate_after_activating(atkr, dfdr)
 
     def coordinate_before_activating(self, atkr, dfdr):
@@ -210,16 +210,15 @@ class Duel:
             self.reactive_p.recycle()
 
     def execute(self, behaviors, actor, nonactor):
-        # should move this handling into the conditional itself
         def ex_with_conditionals(behavior, behavior_execution):
             if len(behavior.conditionals) == 0:
                 behavior_execution()
             else:
                 for c in behavior.conditionals:
                     if c.expected_val == 'changes':
-                        before = c.test_fn(self.state_for_player(actor, nonactor))
+                        before = c.fn(self.state_for_player(actor, nonactor))
                         behavior_execution()
-                        after = c.test_fn(self.state_for_player(actor, nonactor))
+                        after = c.fn(self.state_for_player(actor, nonactor))
                         if (before != after):
                             self.handle_effects(c.if_result, actor, nonactor)
                         else:
@@ -251,9 +250,17 @@ class Duel:
             ex(b)
 
     def handle_effects(self, effects, actor, nonactor):
-        # add get_modifiers() method to Effects class
-        # use it here and in pair.py's 'modifiers' property
-        return
+        if effects is None:
+            return
+
+        mods = {}
+        for m in effects.modifiers:
+            if stacks(m.mtype) and m.mtype in mods:
+                mods[m.mtype] += m.val
+            else:
+                mods[m.mtype] = m.val
+        for mod in mods:
+            actor.apply_modifier(mod, mods[mod])
 
     def we_have_a_winner(self):
         return self.winner is not None
