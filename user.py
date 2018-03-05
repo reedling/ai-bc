@@ -36,5 +36,27 @@ class UserAgentCLI:
             b2i += 1
         discard_indices.append(b2i)
 
-        print('You chose {} {} and {} {}'.format(s1, b1, s2, b2))
+        print('You discarded {} {} and {} {}'.format(s1, b1, s2, b2))
         return discard_indices
+
+    def get_selection(self, av_styles, av_bases, state):
+        styles_text = []
+        bases_text = []
+        for i in av_styles:
+            styles_text.append(state.p.character.styles[i].name)
+        for j in av_bases:
+            bases_text.append(state.p.character.bases[j].name)
+        s, si = pick(styles_text, 'Select a style to play', '=>')
+        b, bi = pick(bases_text, 'Select a base to play', '=>')
+
+        print('You selected {} {}'.format(s, b))
+        return av_styles[si], av_bases[bi]
+
+    def get_new_base(self, av_bases, state):
+        bases_text = []
+        for i in av_bases:
+            bases_text.append(state.p.character.bases[i].name)
+        b, bi = pick(bases_text, 'CLASH! Select a new base to play', '=>')
+
+        print('You selected {}'.format(b))
+        return av_bases[bi]

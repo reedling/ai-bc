@@ -112,14 +112,23 @@ class Player:
         self.selection = None
 
     def get_selection(self, state):
-        stylei = choice(self.available_styles)
-        basei = choice(self.available_bases)
+        av_s = self.available_styles
+        av_b = self.available_bases
+        if hasattr(self.agent, 'get_selection'):
+            stylei, basei = self.agent.get_selection(av_s, av_b, state)
+        else:
+            stylei = choice(av_s)
+            basei = choice(av_b)
         self.played_styles.append(stylei)
         self.played_bases.append(basei)
         return Pair(self.character.styles[stylei], self.character.bases[basei])
 
     def get_new_base(self, state):
-        basei = choice(self.available_bases)
+        av_b = self.available_bases
+        if hasattr(self.agent, 'get_new_base'):
+            basei = self.agent.get_new_base(av_b, state)
+        else:
+            basei = choice(self.available_bases)
         self.played_bases.append(basei)
         return self.character.bases[basei]
 
