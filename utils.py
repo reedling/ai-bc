@@ -92,3 +92,10 @@ def left_of_opponent(state):
 def get_available_indices(full_opts, discarded, played):
     rng = range(len(full_opts))
     return [x for x in rng if x not in discarded and x not in played]
+
+
+def state_string_cli(state):
+    acc = []
+    acc.append(str(state.board))
+    acc.append('')
+    return '\n'.join(acc)

@@ -1,5 +1,7 @@
 from pick import pick
 
+from utils import state_string_cli
+
 
 class UserAgentCLI:
     def select_finisher(self, options, state):
@@ -40,23 +42,25 @@ class UserAgentCLI:
         return discard_indices
 
     def get_selection(self, av_styles, av_bases, state):
+        ctx = state_string_cli(state)
         styles_text = []
         bases_text = []
         for i in av_styles:
             styles_text.append(state.p.character.styles[i].name)
         for j in av_bases:
             bases_text.append(state.p.character.bases[j].name)
-        s, si = pick(styles_text, 'Select a style to play', '=>')
-        b, bi = pick(bases_text, 'Select a base to play', '=>')
+        s, si = pick(styles_text, ctx + 'Select a style to play', '=>')
+        b, bi = pick(bases_text, ctx + 'Select a base to play', '=>')
 
         print('You selected {} {}'.format(s, b))
         return av_styles[si], av_bases[bi]
 
     def get_new_base(self, av_bases, state):
+        ctx = state_string_cli(state)
         bases_text = []
         for i in av_bases:
             bases_text.append(state.p.character.bases[i].name)
-        b, bi = pick(bases_text, 'CLASH! Select a new base to play', '=>')
+        b, bi = pick(bases_text, ctx + 'CLASH Select a new base to play', '=>')
 
         print('You selected {}'.format(b))
         return av_bases[bi]

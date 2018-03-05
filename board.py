@@ -2,6 +2,15 @@ class Board:
     def __init__(self):
         self.spaces = [{} for i in range(7)]
 
+    def __str__(self):
+        acc = []
+        for space in self.spaces:
+            if 'player' in space:
+                acc.append(space['player'].name[0])
+            else:
+                acc.append('_')
+        return ' '.join(acc)
+
     @property
     def length(self):
         return len(self.spaces)
