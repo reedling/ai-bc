@@ -4,7 +4,7 @@ from random import choice, randint
 from character_utils import character_by_name
 from dummy import DummyAgent, Dummy
 from selection import Pair
-from user import UserAgent
+from user import UserAgentCLI
 from utils import (choose_random_valid_behavior, get_possible_behaviors,
                    get_available_indices, stacks)
 
@@ -42,7 +42,7 @@ class Player:
             if self.is_ai:
                 self.agent = DummyAgent()
             else:
-                self.agent = UserAgent()
+                self.agent = UserAgentCLI()
 
     def __str__(self):
         return self.name + '(' + str(self.life) + ')'
@@ -75,13 +75,26 @@ class Player:
         self.discarded_bases.append(index)
 
     def select_finisher(self, state):
-        self.finisher = choice(self.character.finishers)
+        options = self.character.finishers
+        if hasattr(self.agent, 'select_finisher'):
+            self.finisher = self.agent.select_finisher(options, state)
+        else:
+            self.finisher = choice(options)
 
     def init_discards(self, state):
-        self.discard_style(0)
-        self.discard_base(0)
-        self.discard_style(1)
-        self.discard_base(1)
+        if hasattr(self.agent, 'init_discards'):
+            styles = self.character.styles
+            bases = self.character.bases
+            to_discard = self.agent.init_discards(styles, bases, state)
+            self.discard_style(to_discard[0])
+            self.discard_style(to_discard[1])
+            self.discard_base(to_discard[2])
+            self.discard_base(to_discard[3])
+        else:
+            self.discard_style(0)
+            self.discard_base(0)
+            self.discard_style(1)
+            self.discard_base(1)
 
     def recover_discards(self):
         self.discarded_styles.popleft()
