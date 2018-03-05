@@ -1,5 +1,6 @@
 from random import randint
 
+from selection import Finisher
 from state import State
 from utils import stacks
 
@@ -19,10 +20,18 @@ class Duel:
         return State(player, oppo, self.board, self.beat)
 
     def start(self):
+        self.p1.select_finisher(
+            self.state_for_player(self.p1, self.p2)
+        )
+        self.p2.select_finisher(
+            self.state_for_player(self.p2, self.p1)
+        )
         self.p1.init_discards(
-            self.state_for_player(self.p1, self.p2))
+            self.state_for_player(self.p1, self.p2)
+        )
         self.p2.init_discards(
-            self.state_for_player(self.p2, self.p1))
+            self.state_for_player(self.p2, self.p1)
+        )
         self.board.set(self.p1, 2)
         self.board.set(self.p2, 4)
         while (self.p1.life > 0
@@ -40,29 +49,40 @@ class Duel:
         self.p1.refresh()
         self.p2.refresh()
 
-        p1_selection = self.p1.get_selection(
+        p1_sel = self.p1.get_selection(
             self.state_for_player(self.p1, self.p2))
-        p2_selection = self.p2.get_selection(
+        p2_sel = self.p2.get_selection(
             self.state_for_player(self.p2, self.p1))
-        self.coordinate_antes()
-        clash = self.coordinate_reveal(p1_selection, p2_selection)
-        while (clash
-               and self.p1.has_playable_bases()
-               and self.p2.has_playable_bases()):
-            p1_selection.base = self.p1.get_new_base(
-                self.state_for_player(self.p1, self.p2))
-            p2_selection.base = self.p2.get_new_base(
-                self.state_for_player(self.p2, self.p1))
-            clash = self.handle_priority_selection(p1_selection, p2_selection)
 
-        if (clash
-            and (not self.p1.has_playable_bases()
-                 or not self.p2.has_playable_bases())):
-            self.coordinate_recycle()
-            return
+        ante_finisher = self.coordinate_antes()
+        if ante_finisher is not None:
+            # print('FINISHER {}'.format(ante_finisher))
+            if self.p1.ante_finisher:
+                self.coordinate_reveal(ante_finisher, p2_sel)
+            elif self.p2.ante_finisher:
+                self.coordinate_reveal(p1_sel, ante_finisher)
 
-        self.p1.selection = p1_selection
-        self.p2.selection = p2_selection
+        if ante_finisher is None:
+            clash = self.coordinate_reveal(p1_sel, p2_sel)
+            while (clash
+                   and self.p1.has_playable_bases()
+                   and self.p2.has_playable_bases()):
+                p1_sel.base = self.p1.get_new_base(
+                    self.state_for_player(self.p1, self.p2))
+                p2_sel.base = self.p2.get_new_base(
+                    self.state_for_player(self.p2, self.p1))
+                clash = self.handle_priority_selection(p1_sel, p2_sel)
+
+            if (clash
+                and (not self.p1.has_playable_bases()
+                     or not self.p2.has_playable_bases())):
+                self.coordinate_recycle()
+                return
+
+        if self.p1.selection is None:
+            self.p1.selection = p1_sel
+        if self.p2.selection is None:
+            self.p2.selection = p2_sel
         self.p1.apply_selection_modifiers()
         self.p2.apply_selection_modifiers()
 
@@ -79,18 +99,21 @@ class Duel:
     def coordinate_antes(self):
         def ca(to_ante, next_up, first_invocation, last_ante=None):
             ante = to_ante.get_ante(self.state_for_player(to_ante, next_up))
+            if isinstance(ante, Finisher):
+                to_ante.selection = ante
+                return ante
             # apply ante to board or players as necessary
             if ante is not None or last_ante is not None or first_invocation:
-                ca(next_up, to_ante, False, ante)
+                return ca(next_up, to_ante, False, ante)
 
         if self.active_p is None:
             val = randint(0, 1)
             if val == 0:
-                ca(self.p1, self.p2, True)
+                return ca(self.p1, self.p2, True)
             else:
-                ca(self.p2, self.p1, True)
+                return ca(self.p2, self.p1, True)
         else:
-            ca(self.active_p, self.reactive_p, True)
+            return ca(self.active_p, self.reactive_p, True)
 
     def coordinate_reveal(self, p1_selection, p2_selection):
         # Will need to apply special handling for Special Actions
@@ -112,6 +135,7 @@ class Duel:
     def handle_priority_selection(self, p1_selection, p2_selection):
         # print('p1 {}'.format(p1_selection))
         # print('p2 {}'.format(p2_selection))
+        # print('{} vs {}'.format(p1_selection, p2_selection))
         if p1_selection.priority > p2_selection.priority:
             self.active_p = self.p1
             self.active_p.active = True
@@ -122,6 +146,20 @@ class Duel:
             self.active_p.active = True
             self.reactive_p = self.p1
             self.reactive_p.active = False
+        elif (isinstance(p1_selection, Finisher)
+              and not isinstance(p2_selection, Finisher)):
+            self.active_p = self.p1
+            self.active_p.active = True
+            self.reactive_p = self.p2
+            self.reactive_p.active = False
+        elif (isinstance(p2_selection, Finisher)
+              and not isinstance(p1_selection, Finisher)):
+            self.active_p = self.p2
+            self.active_p.active = True
+            self.reactive_p = self.p1
+            self.reactive_p.active = False
+        # Need to implement finishers matching priority, because this is
+        # not handled in the same way as a normal clash
         else:  # Clash!
             # print('clash!')
             return True
@@ -148,6 +186,7 @@ class Duel:
                         self.winner = atkr
                         self.loser = dfdr
                     if damage > 0:
+                        # print('{} used {} for {}'.format(atkr, atkr.selection, damage))
                         self.coordinate_on_damage(atkr, dfdr)
             self.coordinate_after_activating(atkr, dfdr)
 

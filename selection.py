@@ -1,5 +1,6 @@
 from random import randint
 
+from card_logic import Effects
 from utils import stacks
 
 
@@ -56,3 +57,40 @@ class Pair:
 
     def __str__(self):
         return self.style.name + ' ' + self.base.name
+
+
+class Finisher:
+    def __init__(self, name, atk_range, power, priority,
+                 effects=Effects()):
+        self.name = name
+        self.atk_range = atk_range
+        self.power = power
+        self.priority = priority
+        self.effects = effects
+
+    @property
+    def atk_range_options(self):
+        if not isinstance(self.atk_range, list):
+            return [self.atk_range]
+        else:
+            return self.atk_range
+
+    @property
+    def modifiers(self):
+        mods = {}
+        for m in self.effects.modifiers:
+            if stacks(m.mtype) and m.mtype in mods:
+                mods[m.mtype] += m.val
+            else:
+                mods[m.mtype] = m.val
+        return mods
+
+    def get_effects(self, trigger):
+        effs = []
+        for t in self.effects.triggers:
+            if t.name == trigger:
+                effs.append(t)
+        return effs
+
+    def __str__(self):
+        return self.name

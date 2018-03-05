@@ -1,9 +1,9 @@
 from collections import deque
-from random import choice
+from random import choice, randint
 
 from character_utils import character_by_name
 from dummy import DummyAgent, Dummy
-from pair import Pair
+from selection import Pair
 from user import UserAgent
 from utils import (choose_random_valid_behavior, get_possible_behaviors,
                    get_available_indices, stacks)
@@ -15,9 +15,10 @@ class Player:
         self.is_ai = is_ai
         self.life = 20
         self.position = None
+        self.finisher = None
+        self.ante_finisher = False
         self.discarded_styles = deque()
         self.discarded_bases = deque()
-        # self.discarded_other = deque()
         self.played_styles = []
         self.played_bases = []
         self.selection = None
@@ -55,6 +56,9 @@ class Player:
         self.dodge = False
 
     def get_ante(self, info):
+        if self.finisher is not None and self.life <= 7 and randint(0, 2) == 2:
+            self.ante_finisher = True
+            return self.finisher
         return None
 
     @property
@@ -70,6 +74,9 @@ class Player:
     def discard_base(self, index):
         self.discarded_bases.append(index)
 
+    def select_finisher(self, state):
+        self.finisher = choice(self.character.finishers)
+
     def init_discards(self, state):
         self.discard_style(0)
         self.discard_base(0)
@@ -81,9 +88,12 @@ class Player:
         self.discarded_bases.popleft()
 
     def recycle(self):
-        self.recover_discards()
-        self.discard_style(self.played_styles.pop())
-        self.discard_base(self.played_bases.pop())
+        if self.ante_finisher:
+            self.finisher = None
+        else:
+            self.recover_discards()
+            self.discard_style(self.played_styles.pop())
+            self.discard_base(self.played_bases.pop())
         self.played_styles = []
         self.played_bases = []
         self.selection = None
