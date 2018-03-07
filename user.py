@@ -61,6 +61,6 @@ class UserAgentCLI:
 
     def get_ante(self, state):
         ctx = state_string_cli(state)
-        ante_opts_text = [ 'None', 'Finisher' ]
+        ante_opts_text = ['None', 'Finisher']
         ante, antei = pick(ante_opts_text, ctx + 'Your turn to ante', '=>')
         return ante

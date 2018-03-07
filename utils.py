@@ -94,24 +94,28 @@ def get_available_indices(full_opts, discarded, played):
     return [x for x in rng if x not in discarded and x not in played]
 
 
+def player_state_string_cli(desc, p):
+    acc = []
+    acc.append('({}) -- {}'.format(desc, p.name))
+    acc.append('  Life: {}'.format(p.life))
+    acc.append('  Outer Discard: {} {}'.format(
+        p.character.styles[p.discarded_styles[0]].name,
+        p.character.bases[p.discarded_bases[0]].name
+    ))
+    acc.append('  Inner Discard: {} {}'.format(
+        p.character.styles[p.discarded_styles[1]].name,
+        p.character.bases[p.discarded_bases[1]].name
+    ))
+    acc.append('  Finisher: {}'.format(p.finisher.name))
+    acc.append('')
+    return '\n'.join(acc)
+
+
 def state_string_cli(state):
     acc = []
-    acc.append('Enemy Outer Discard: {} {}'.format(
-        state.o.character.styles[state.o.discarded_styles[0]].name,
-        state.o.character.bases[state.o.discarded_bases[0]].name
-    ))
-    acc.append('Enemy Inner Discard: {} {}'.format(
-        state.o.character.styles[state.o.discarded_styles[1]].name,
-        state.o.character.bases[state.o.discarded_bases[1]].name
-    ))
+    acc.append(player_state_string_cli('Enemy', state.o))
     acc.append(str(state.board))
-    acc.append('Your Outer Discard: {} {}'.format(
-        state.p.character.styles[state.p.discarded_styles[0]].name,
-        state.p.character.bases[state.p.discarded_bases[0]].name
-    ))
-    acc.append('Your Inner Discard: {} {}'.format(
-        state.p.character.styles[state.p.discarded_styles[1]].name,
-        state.p.character.bases[state.p.discarded_bases[1]].name
-    ))
+    acc.append('')
+    acc.append(player_state_string_cli('You', state.p))
     acc.append('')
     return '\n'.join(acc)
