@@ -94,10 +94,34 @@ def get_available_indices(full_opts, discarded, played):
     return [x for x in rng if x not in discarded and x not in played]
 
 
+def get_played_cards(p):
+    played = {
+        'styles': [],
+        'bases': []
+    }
+    for s in p.played_styles:
+        played['styles'].append(p.character.styles[s].name)
+    for b in p.played_bases:
+        played['bases'].append(p.character.bases[b].name)
+    return played
+
+
 def player_state_string_cli(desc, p):
+    played = get_played_cards(p)
     acc = []
     acc.append('({}) -- {}'.format(desc, p.name))
     acc.append('  Life: {}'.format(p.life))
+
+    if p.selection is not None:
+        acc.append('  Selection: {}'.format(str(p.selection)))
+
+    if len(played['styles']) + len(played['bases']) > 0:
+        acc.append('  Played:')
+        if len(played['styles']) > 0:
+            acc.append('    Styles: {}'.format(' '.join(played['styles'])))
+        if len(played['bases']) > 0:
+            acc.append('    Bases:  {}'.format(' '.join(played['bases'])))
+
     acc.append('  Outer Discard: {} {}'.format(
         p.character.styles[p.discarded_styles[0]].name,
         p.character.bases[p.discarded_bases[0]].name
@@ -106,10 +130,12 @@ def player_state_string_cli(desc, p):
         p.character.styles[p.discarded_styles[1]].name,
         p.character.bases[p.discarded_bases[1]].name
     ))
+
     if p.finisher is not None:
         acc.append('  Finisher: {}'.format(p.finisher.name))
     else:
-        acc.append('  (Finisher already used)')
+        acc.append('  (Finisher used)')
+
     acc.append('')
     return '\n'.join(acc)
 
