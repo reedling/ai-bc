@@ -55,10 +55,16 @@ class Player:
         self.can_hit = True
         self.dodge = False
 
-    def get_ante(self, info):
-        if self.finisher is not None and self.life <= 7 and randint(0, 2) == 2:
-            self.ante_finisher = True
-            return self.finisher
+    def get_ante(self, state):
+        if self.finisher is not None and self.life <= 7:
+            if hasattr(self.agent, 'get_ante'):
+                if self.agent.get_ante(state) == 'Finisher':
+                    self.ante_finisher = True
+                    return self.finisher
+            else:
+                if randint(0, 2) == 2:
+                    self.ante_finisher = True
+                    return self.finisher
         return None
 
     @property
@@ -102,6 +108,7 @@ class Player:
 
     def recycle(self):
         if self.ante_finisher:
+            self.ante_finisher = False
             self.finisher = None
         else:
             self.recover_discards()
