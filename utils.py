@@ -106,7 +106,10 @@ def player_state_string_cli(desc, p):
         p.character.styles[p.discarded_styles[1]].name,
         p.character.bases[p.discarded_bases[1]].name
     ))
-    acc.append('  Finisher: {}'.format(p.finisher.name))
+    if p.finisher is not None:
+        acc.append('  Finisher: {}'.format(p.finisher.name))
+    else:
+        acc.append('  (Finisher already used)')
     acc.append('')
     return '\n'.join(acc)
 
