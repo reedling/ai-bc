@@ -179,29 +179,30 @@ class Player:
         for mod in selection.modifiers:
             self.apply_modifier(mod, selection.modifiers[mod])
 
+    def get_behavior(self, state, trigger):
+        possible = get_possible_behaviors(self.selection, trigger)
+        if hasattr(self.agent, 'get_behavior'):
+            return self.agent.get_behavior(possible, state)
+        else:
+            return choose_random_valid_behavior(possible, state)
+
     def get_start_of_beat(self, state):
-        possible = get_possible_behaviors(self.selection, 'startOfBeat')
-        return choose_random_valid_behavior(possible, state)
+        return self.get_behavior(state, 'startOfBeat')
 
     def get_before_activating(self, state):
-        possible = get_possible_behaviors(self.selection, 'beforeActivating')
-        return choose_random_valid_behavior(possible, state)
+        return self.get_behavior(state, 'beforeActivating')
 
     def get_on_hit(self, state):
-        possible = get_possible_behaviors(self.selection, 'onHit')
-        return choose_random_valid_behavior(possible, state)
+        return self.get_behavior(state, 'onHit')
 
     def get_on_damage(self, state):
-        possible = get_possible_behaviors(self.selection, 'onDamage')
-        return choose_random_valid_behavior(possible, state)
+        return self.get_behavior(state, 'onDamage')
 
     def get_after_activating(self, state):
-        possible = get_possible_behaviors(self.selection, 'afterActivating')
-        return choose_random_valid_behavior(possible, state)
+        return self.get_behavior(state, 'afterActivating')
 
     def get_end_of_beat(self, state):
-        possible = get_possible_behaviors(self.selection, 'endOfBeat')
-        return choose_random_valid_behavior(possible, state)
+        return self.get_behavior(state, 'endOfBeat')
 
     def handle_damage(self, damage, attacker):
         if damage > 0:
