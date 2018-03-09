@@ -60,7 +60,7 @@ def get_possible_behaviors(selection, trigger):
     return possible
 
 
-def choose_random_valid_behavior(possible_behaviors, state):
+def choose_random_valid_behaviors(possible_behaviors, state):
     chosen = []
     indices = [x for x in range(0, len(possible_behaviors))]
     shuffle(indices)
@@ -134,7 +134,7 @@ def player_state_string_cli(desc, p):
     if p.finisher is not None:
         acc.append('  Finisher: {}'.format(p.finisher.name))
     else:
-        acc.append('  (Finisher used)')
+        acc.append('  (Finisher unavailable)')
 
     acc.append('')
     return '\n'.join(acc)

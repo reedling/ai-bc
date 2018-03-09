@@ -5,7 +5,7 @@ from character_utils import character_by_name
 from dummy import DummyAgent, Dummy
 from selection import Pair
 from user import UserAgentCLI
-from utils import (choose_random_valid_behavior, get_possible_behaviors,
+from utils import (choose_random_valid_behaviors, get_possible_behaviors,
                    get_available_indices, stacks)
 
 
@@ -81,11 +81,12 @@ class Player:
         self.discarded_bases.append(index)
 
     def select_finisher(self, state):
-        options = self.character.finishers
-        if hasattr(self.agent, 'select_finisher'):
-            self.finisher = self.agent.select_finisher(options, state)
-        else:
-            self.finisher = choice(options)
+        if hasattr(self.character, 'finishers'):
+            options = self.character.finishers
+            if hasattr(self.agent, 'select_finisher'):
+                self.finisher = self.agent.select_finisher(options, state)
+            else:
+                self.finisher = choice(options)
 
     def init_discards(self, state):
         if hasattr(self.agent, 'init_discards'):
@@ -179,30 +180,30 @@ class Player:
         for mod in selection.modifiers:
             self.apply_modifier(mod, selection.modifiers[mod])
 
-    def get_behavior(self, state, trigger):
+    def get_behaviors(self, state, trigger):
         possible = get_possible_behaviors(self.selection, trigger)
-        if hasattr(self.agent, 'get_behavior'):
-            return self.agent.get_behavior(possible, state)
+        if hasattr(self.agent, 'get_behaviors'):
+            return self.agent.get_behaviors(possible, state)
         else:
-            return choose_random_valid_behavior(possible, state)
+            return choose_random_valid_behaviors(possible, state)
 
     def get_start_of_beat(self, state):
-        return self.get_behavior(state, 'startOfBeat')
+        return self.get_behaviors(state, 'startOfBeat')
 
     def get_before_activating(self, state):
-        return self.get_behavior(state, 'beforeActivating')
+        return self.get_behaviors(state, 'beforeActivating')
 
     def get_on_hit(self, state):
-        return self.get_behavior(state, 'onHit')
+        return self.get_behaviors(state, 'onHit')
 
     def get_on_damage(self, state):
-        return self.get_behavior(state, 'onDamage')
+        return self.get_behaviors(state, 'onDamage')
 
     def get_after_activating(self, state):
-        return self.get_behavior(state, 'afterActivating')
+        return self.get_behaviors(state, 'afterActivating')
 
     def get_end_of_beat(self, state):
-        return self.get_behavior(state, 'endOfBeat')
+        return self.get_behaviors(state, 'endOfBeat')
 
     def handle_damage(self, damage, attacker):
         if damage > 0:
