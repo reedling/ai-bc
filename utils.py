@@ -142,6 +142,7 @@ def player_state_string_cli(desc, p):
 
 def state_string_cli(state):
     acc = []
+    acc.append('Beat {}'.format(state.beat))
     acc.append(player_state_string_cli('Enemy', state.o))
     acc.append(str(state.board))
     acc.append('')

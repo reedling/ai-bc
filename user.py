@@ -64,3 +64,23 @@ class UserAgentCLI:
         ante_opts_text = ['None', 'Finisher']
         ante, antei = pick(ante_opts_text, ctx + 'Your turn to ante', '=>')
         return ante
+
+    # def get_behaviors(self, possible, state):
+    #     def get_behavior(opts, last):
+    #     # can't simulate state, as opponent will get opportunity to act
+    #     # in some cases...  need to get behaviors one at a time
+    #     simulated =
+    #     ctx = state_string_cli(state)
+    #     chosen = []
+    #     done = []
+    #     while len(chosen) < len(possible):
+    #         remaining = [x for x in range(len(possible)) if x not in done]
+    #         if len(chosen) == len(possible) - 1:
+    #             chosen.append(get_behavior(possible[remaining[0]], True))
+    #         else:
+    #             act, act_i = pick(remaining, ctx + 'Select an action', '=>')
+    #             selected = get_behavior(possible[int(act)], False)
+    #             if selected is not None:
+    #                 done.append(int(act))
+    #                 chosen.append(selected)
+    #     return chosen
