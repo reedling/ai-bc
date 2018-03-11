@@ -45,7 +45,6 @@ class Duel:
         self.handle_duel_end()
 
     def coordinate_beat(self):
-        # print('beat {}'.format(self.beat))
         self.p1.refresh()
         self.p2.refresh()
 
@@ -56,7 +55,6 @@ class Duel:
 
         ante_finisher = self.coordinate_antes()
         if ante_finisher is not None:
-            # print('FINISHER {}'.format(ante_finisher))
             if self.p1.ante_finisher:
                 self.coordinate_reveal(ante_finisher, p2_sel)
             elif self.p2.ante_finisher:
@@ -94,7 +92,6 @@ class Duel:
         #  UAs that apply at the end of every beat
         self.coordinate_end_of_beat()
         self.coordinate_recycle()
-        # print(self.board.spaces)
 
     def coordinate_antes(self):
         def ca(to_ante, next_up, first_invocation, last_ante=None):
@@ -133,9 +130,6 @@ class Duel:
         return self.handle_priority_selection(p1_selection, p2_selection)
 
     def handle_priority_selection(self, p1_selection, p2_selection):
-        # print('p1 {}'.format(p1_selection))
-        # print('p2 {}'.format(p2_selection))
-        # print('{} vs {}'.format(p1_selection, p2_selection))
         if p1_selection.priority > p2_selection.priority:
             self.active_p = self.p1
             self.active_p.active = True
@@ -161,7 +155,6 @@ class Duel:
         # Need to implement finishers matching priority, because this is
         # not handled in the same way as a normal clash
         else:  # Clash!
-            # print('clash!')
             return True
 
     def coordinate_start_of_beat(self):
@@ -186,7 +179,6 @@ class Duel:
                         self.winner = atkr
                         self.loser = dfdr
                     if damage > 0:
-                        # print('{} used {} for {}'.format(atkr, atkr.selection, damage))
                         self.coordinate_on_damage(atkr, dfdr)
             self.coordinate_after_activating(atkr, dfdr)
 
