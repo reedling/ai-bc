@@ -51,31 +51,22 @@ def get_standard_bases():
     ]
 
 
-def get_possible_behaviors(selection, trigger):
+def get_possible(selection, trigger, get_behaviors=False):
     possible = []
     effects = selection.get_effects(trigger)
     for effect in effects:
         for action in effect.actions:
-            possible.append(action.behaviors)
+            if get_behaviors:
+                possible.append(action.behaviors)
+            else:
+                possible.append(action)
     return possible
 
 
-def choose_random_valid_behaviors(possible_behaviors, state):
-    chosen = []
-    indices = [x for x in range(0, len(possible_behaviors))]
-    shuffle(indices)
-    for i in indices:
-        opt = None
-        while len(possible_behaviors[i]) > 0 and opt is None:
-            opt = choice(possible_behaviors[i])
-            if not state.permits(opt):
-                possible_behaviors[i].remove(opt)
-                opt = None
-
-        if opt is not None:
-            chosen.append(opt)
-            # update state so we can choose valid actions
-    return chosen
+def choose_random_valid_behavior(actions, state):
+    action = choice(actions)
+    possible_behaviors = state.get_permitted_behaviors(action)
+    return action, choice(possible_behaviors)
 
 
 def stacks(mod):

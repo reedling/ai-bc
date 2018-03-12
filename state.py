@@ -5,6 +5,15 @@ class State:
         self.board = board
         self.beat = beat
 
+    def get_permitted_behaviors(self, action):
+        return [b for b in action.behaviors if self.permits(b)]
+
+    def permits_action(self, action):
+        for b in action.behaviors:
+            if self.permits(b):
+                return True
+        return False
+
     def permits(self, behavior):
         if behavior.is_move():
             x = self.permits_movement(behavior)

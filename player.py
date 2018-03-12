@@ -5,7 +5,7 @@ from character_utils import character_by_name
 from dummy import DummyAgent, Dummy
 from selection import Pair
 from user import UserAgentCLI
-from utils import (choose_random_valid_behaviors, get_possible_behaviors,
+from utils import (choose_random_valid_behavior, get_possible,
                    get_available_indices, stacks)
 
 
@@ -180,30 +180,15 @@ class Player:
         for mod in selection.modifiers:
             self.apply_modifier(mod, selection.modifiers[mod])
 
-    def get_behaviors(self, state, trigger):
-        possible = get_possible_behaviors(self.selection, trigger)
-        if hasattr(self.agent, 'get_behaviors'):
-            return self.agent.get_behaviors(possible, state)
+    def get_actions(self, trigger):
+        return get_possible(self.selection, trigger)
+
+    def get_behavior(self, actions, state, trigger):
+        if hasattr(self.agent, 'get_behavior'):
+            chosen, b = self.agent.get_behavior(actions, state, trigger)
         else:
-            return choose_random_valid_behaviors(possible, state)
-
-    def get_start_of_beat(self, state):
-        return self.get_behaviors(state, 'startOfBeat')
-
-    def get_before_activating(self, state):
-        return self.get_behaviors(state, 'beforeActivating')
-
-    def get_on_hit(self, state):
-        return self.get_behaviors(state, 'onHit')
-
-    def get_on_damage(self, state):
-        return self.get_behaviors(state, 'onDamage')
-
-    def get_after_activating(self, state):
-        return self.get_behaviors(state, 'afterActivating')
-
-    def get_end_of_beat(self, state):
-        return self.get_behaviors(state, 'endOfBeat')
+            chosen, b = choose_random_valid_behavior(actions, state)
+        return chosen, b
 
     def handle_damage(self, damage, attacker):
         if damage > 0:

@@ -158,14 +158,13 @@ class Duel:
             return True
 
     def coordinate_start_of_beat(self):
-        active_behaviors = self.active_p.get_start_of_beat(
-            self.state_for_player(self.active_p, self.reactive_p)
-        )
-        self.execute(active_behaviors, self.active_p, self.reactive_p)
-        reactive_behaviors = self.reactive_p.get_start_of_beat(
-            self.state_for_player(self.reactive_p, self.active_p)
-        )
-        self.execute(reactive_behaviors, self.reactive_p, self.active_p)
+        act = self.active_p
+        react = self.reactive_p
+        trigger = 'startOfBeat'
+        active_actions = act.get_actions(trigger)
+        self.coordinate_actions(act, react, trigger, active_actions)
+        reactive_actions = react.get_actions(trigger)
+        self.coordinate_actions(react, act, trigger, reactive_actions)
 
     def coordinate_attack(self, atkr, dfdr):
         if (not atkr.stunned):
@@ -183,16 +182,14 @@ class Duel:
             self.coordinate_after_activating(atkr, dfdr)
 
     def coordinate_before_activating(self, atkr, dfdr):
-        behaviors = atkr.get_before_activating(
-            self.state_for_player(atkr, dfdr)
-        )
-        self.execute(behaviors, atkr, dfdr)
+        trigger = 'beforeActivating'
+        actions = atkr.get_actions(trigger)
+        self.coordinate_actions(atkr, dfdr, trigger, actions)
 
     def coordinate_on_hit(self, atkr, dfdr):
-        behaviors = atkr.get_on_hit(
-            self.state_for_player(atkr, dfdr)
-        )
-        self.execute(behaviors, atkr, dfdr)
+        trigger = 'onHit'
+        actions = atkr.get_actions(trigger)
+        self.coordinate_actions(atkr, dfdr, trigger, actions)
 
     def apply_damage(self, atkr, dfdr):
         damage = atkr.selection.power
@@ -203,26 +200,23 @@ class Duel:
         return damage
 
     def coordinate_on_damage(self, atkr, dfdr):
-        behaviors = atkr.get_on_damage(
-            self.state_for_player(atkr, dfdr)
-        )
-        self.execute(behaviors, atkr, dfdr)
+        trigger = 'onDamage'
+        actions = atkr.get_actions(trigger)
+        self.coordinate_actions(atkr, dfdr, trigger, actions)
 
     def coordinate_after_activating(self, atkr, dfdr):
-        behaviors = atkr.get_after_activating(
-            self.state_for_player(atkr, dfdr)
-        )
-        self.execute(behaviors, atkr, dfdr)
+        trigger = 'afterActivating'
+        actions = atkr.get_actions(trigger)
+        self.coordinate_actions(atkr, dfdr, trigger, actions)
 
     def coordinate_end_of_beat(self):
-        active_behaviors = self.active_p.get_end_of_beat(
-            self.state_for_player(self.active_p, self.reactive_p)
-        )
-        self.execute(active_behaviors, self.active_p, self.reactive_p)
-        reactive_behaviors = self.reactive_p.get_end_of_beat(
-            self.state_for_player(self.reactive_p, self.active_p)
-        )
-        self.execute(reactive_behaviors, self.reactive_p, self.active_p)
+        actor = self.active_p
+        reactor = self.reactive_p
+        trigger = 'endOfBeat'
+        active_actions = actor.get_actions(trigger)
+        self.coordinate_actions(actor, reactor, trigger, active_actions)
+        reactive_actions = reactor.get_actions(trigger)
+        self.coordinate_actions(reactor, actor, trigger, reactive_actions)
 
     def coordinate_recycle(self):
         if self.we_have_a_winner():
@@ -239,6 +233,16 @@ class Duel:
         else:
             self.active_p.recycle()
             self.reactive_p.recycle()
+
+    def coordinate_actions(self, actor, nonactor, trigger, actions):
+        state = self.state_for_player(actor, nonactor)
+        permitted = [a for a in actions if state.permits_action(a)]
+        while len(permitted) > 0:
+            chosen, behavior = actor.get_behavior(permitted, state, trigger)
+            self.execute([behavior], actor, nonactor)
+            actions.remove(chosen)
+            state = self.state_for_player(actor, nonactor)
+            permitted = [a for a in actions if state.permits_action(a)]
 
     def execute(self, behaviors, actor, nonactor):
         def ex_with_conditionals(behavior, behavior_execution):
