@@ -65,22 +65,20 @@ class UserAgentCLI:
         ante, antei = pick(ante_opts_text, ctx + 'Your turn to ante', '=>')
         return ante
 
-    # def get_behaviors(self, possible, state):
-    #     def get_behavior(opts, last):
-    #     # can't simulate state, as opponent will get opportunity to act
-    #     # in some cases...  need to get behaviors one at a time
-    #     simulated =
-    #     ctx = state_string_cli(state)
-    #     chosen = []
-    #     done = []
-    #     while len(chosen) < len(possible):
-    #         remaining = [x for x in range(len(possible)) if x not in done]
-    #         if len(chosen) == len(possible) - 1:
-    #             chosen.append(get_behavior(possible[remaining[0]], True))
-    #         else:
-    #             act, act_i = pick(remaining, ctx + 'Select an action', '=>')
-    #             selected = get_behavior(possible[int(act)], False)
-    #             if selected is not None:
-    #                 done.append(int(act))
-    #                 chosen.append(selected)
-    #     return chosen
+    def get_behavior(self, actions, state, trigger):
+        ctx = state_string_cli(state)
+        if len(actions) > 1:
+            action_opts_text = []
+            for a in actions:
+                behaviors = state.get_permitted_behaviors(a)
+                b_strings = []
+                for b in behaviors:
+                    b_strings.append(str(b))
+                action_opts_text.append(' OR '.join(b_strings))
+            a, ai = pick(action_opts_text, ctx + 'Select an action', '=>')
+            chosen_a = actions[ai]
+        else:
+            chosen_a = actions[0]
+        permitted = state.get_permitted_behaviors(chosen_a)
+        b, bi = pick(permitted, ctx + 'Choose your move', '=>')
+        return chosen_a, permitted[bi]
