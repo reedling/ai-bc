@@ -2,11 +2,11 @@ from collections import deque
 from random import choice, randint
 
 from character_utils import character_by_name
+from discards import Discards
 from dummy import DummyAgent, Dummy
 from selection import Pair
 from user import UserAgentCLI
-from utils import (choose_random_valid_behavior, get_possible,
-                   get_available_indices, stacks)
+from utils import (choose_random_valid_behavior, get_possible, stacks)
 
 
 class Player:
@@ -17,8 +17,7 @@ class Player:
         self.position = None
         self.finisher = None
         self.ante_finisher = False
-        self.discarded_styles = deque()
-        self.discarded_bases = deque()
+        self.discards = Discards(2)
         self.played_styles = []
         self.played_bases = []
         self.selection = None
@@ -74,11 +73,14 @@ class Player:
             'position': self.position
         }
 
-    def discard_style(self, index):
-        self.discarded_styles.append(index)
+    def discard(self, to_discard):
+        self.discard_inner(to_discard)
 
-    def discard_base(self, index):
-        self.discarded_bases.append(index)
+    def discard_inner(self, to_discard):
+        self.discards.discard_inner(to_discard)
+
+    def discard_outer(self, to_discard):
+        self.discards.discard_outer(to_discard)
 
     def select_finisher(self, state):
         if hasattr(self.character, 'finishers'):
@@ -89,23 +91,30 @@ class Player:
                 self.finisher = choice(options)
 
     def init_discards(self, state):
+        styles = self.character.styles
+        bases = self.character.bases
         if hasattr(self.agent, 'init_discards'):
-            styles = self.character.styles
-            bases = self.character.bases
             to_discard = self.agent.init_discards(styles, bases, state)
-            self.discard_style(to_discard[0])
-            self.discard_style(to_discard[1])
-            self.discard_base(to_discard[2])
-            self.discard_base(to_discard[3])
+            self.discard_outer([
+                styles[to_discard[0]],
+                bases[to_discard[2]]
+            ])
+            self.discard([
+                styles[to_discard[1]],
+                bases[to_discard[3]]
+            ])
         else:
-            self.discard_style(0)
-            self.discard_base(0)
-            self.discard_style(1)
-            self.discard_base(1)
+            self.discard_outer([
+                styles[0],
+                bases[0]
+            ])
+            self.discard([
+                styles[1],
+                bases[1]
+            ])
 
     def recover_discards(self):
-        self.discarded_styles.popleft()
-        self.discarded_bases.popleft()
+        self.discards.cycle_out()
 
     def recycle(self):
         if self.ante_finisher:
@@ -113,8 +122,8 @@ class Player:
             self.finisher = None
         else:
             self.recover_discards()
-            self.discard_style(self.played_styles.pop())
-            self.discard_base(self.played_bases.pop())
+            self.discard(self.played_styles.pop())
+            self.discard(self.played_bases.pop())
         self.played_styles = []
         self.played_bases = []
         self.selection = None
@@ -123,44 +132,42 @@ class Player:
         av_s = self.available_styles
         av_b = self.available_bases
         if hasattr(self.agent, 'get_selection'):
-            stylei, basei = self.agent.get_selection(av_s, av_b, state)
+            style, base = self.agent.get_selection(av_s, av_b, state)
         else:
-            stylei = choice(av_s)
-            basei = choice(av_b)
-        self.played_styles.append(stylei)
-        self.played_bases.append(basei)
-        return Pair(self.character.styles[stylei], self.character.bases[basei])
+            style = choice(av_s)
+            base = choice(av_b)
+        self.played_styles.append(style)
+        self.played_bases.append(base)
+        return Pair(style, base)
 
     def get_new_base(self, state):
         av_b = self.available_bases
         if hasattr(self.agent, 'get_new_base'):
-            basei = self.agent.get_new_base(av_b, state)
+            base = self.agent.get_new_base(av_b, state)
         else:
-            basei = choice(self.available_bases)
-        self.played_bases.append(basei)
-        return self.character.bases[basei]
+            base = choice(self.available_bases)
+        self.played_bases.append(base)
+        return base
 
     @property
     def available_styles(self):
-        return get_available_indices(
-            self.character.styles, self.discarded_styles, self.played_styles
-        )
+        opts = self.character.styles
+        discarded = self.discards.styles
+        played = self.played_styles
+        return [s for s in opts if s not in discarded and s not in played]
 
     @property
     def available_bases(self):
-        return get_available_indices(
-            self.character.bases, self.discarded_bases, self.played_bases
-        )
+        opts = self.character.bases
+        discarded = self.discards.bases
+        played = self.played_bases
+        return [b for b in opts if b not in discarded and b not in played]
 
-    # def has_playable_styles(self): # is this needed?
-    #   return len(get_available_indices(
-    #       self.character.styles, self.discarded_styles, self.played_styles
-    #   )) > 0
+    def has_playable_styles(self):
+        return len(self.available_styles) > 0
 
     def has_playable_bases(self):
-        return len(get_available_indices(
-            self.character.bases, self.discarded_bases, self.played_bases
-        )) > 0
+        return len(self.available_bases) > 0
 
     def apply_reveal_effects(self):
         # need to implement this

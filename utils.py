@@ -80,20 +80,11 @@ def left_of_opponent(state):
     return state.p.position < state.o.position
 
 
-def get_available_indices(full_opts, discarded, played):
-    rng = range(len(full_opts))
-    return [x for x in rng if x not in discarded and x not in played]
-
-
 def get_played_cards(p):
     played = {
-        'styles': [],
-        'bases': []
+        'styles': [s.name for s in p.played_styles],
+        'bases': [b.name for b in p.played_bases]
     }
-    for s in p.played_styles:
-        played['styles'].append(p.character.styles[s].name)
-    for b in p.played_bases:
-        played['bases'].append(p.character.bases[b].name)
     return played
 
 
@@ -113,14 +104,14 @@ def player_state_string_cli(desc, p):
         if len(played['bases']) > 0:
             acc.append('    Bases:  {}'.format(' '.join(played['bases'])))
 
-    acc.append('  Outer Discard: {} {}'.format(
-        p.character.styles[p.discarded_styles[0]].name,
-        p.character.bases[p.discarded_bases[0]].name
-    ))
-    acc.append('  Inner Discard: {} {}'.format(
-        p.character.styles[p.discarded_styles[1]].name,
-        p.character.bases[p.discarded_bases[1]].name
-    ))
+    # acc.append('  Outer Discard: {} {}'.format(
+    #     p.character.styles[p.discarded_styles[0]].name,
+    #     p.character.bases[p.discarded_bases[0]].name
+    # ))
+    # acc.append('  Inner Discard: {} {}'.format(
+    #     p.character.styles[p.discarded_styles[1]].name,
+    #     p.character.bases[p.discarded_bases[1]].name
+    # ))
 
     if p.finisher is not None:
         acc.append('  Finisher: {}'.format(p.finisher.name))

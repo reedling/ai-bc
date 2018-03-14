@@ -43,10 +43,10 @@ class UserAgentCLI:
         ctx = state_string_cli(state)
         styles_text = []
         bases_text = []
-        for i in av_styles:
-            styles_text.append(state.p.character.styles[i].name)
-        for j in av_bases:
-            bases_text.append(state.p.character.bases[j].name)
+        for av_s in av_styles:
+            styles_text.append(av_s.name)
+        for av_b in av_bases:
+            bases_text.append(av_b.name)
         s, si = pick(styles_text, ctx + 'Select a style to play', '=>')
         b, bi = pick(bases_text, ctx + 'Select a base to play', '=>')
         return av_styles[si], av_bases[bi]
@@ -54,8 +54,8 @@ class UserAgentCLI:
     def get_new_base(self, av_bases, state):
         ctx = state_string_cli(state)
         bases_text = []
-        for i in av_bases:
-            bases_text.append(state.p.character.bases[i].name)
+        for av_b in av_bases:
+            bases_text.append(av_b.name)
         b, bi = pick(bases_text, ctx + 'CLASH Select a new base to play', '=>')
         return av_bases[bi]
 
