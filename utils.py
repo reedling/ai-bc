@@ -104,14 +104,24 @@ def player_state_string_cli(desc, p):
         if len(played['bases']) > 0:
             acc.append('    Bases:  {}'.format(' '.join(played['bases'])))
 
-    # acc.append('  Outer Discard: {} {}'.format(
-    #     p.character.styles[p.discarded_styles[0]].name,
-    #     p.character.bases[p.discarded_bases[0]].name
-    # ))
-    # acc.append('  Inner Discard: {} {}'.format(
-    #     p.character.styles[p.discarded_styles[1]].name,
-    #     p.character.bases[p.discarded_bases[1]].name
-    # ))
+    acc.append('  Outer Discard:')
+    if len(p.discards.outer['styles']) > 0:
+        acc.append('    Styles: {}'.format(' '.join(
+            [outs.name for outs in p.discards.outer['styles']]
+        )))
+    if len(p.discards.outer['bases']) > 0:
+        acc.append('    Bases:  {}'.format(' '.join(
+            [outb.name for outb in p.discards.outer['bases']]
+        )))
+    acc.append('  Inner Discard:')
+    if len(p.discards.inner['styles']) > 0:
+        acc.append('    Styles: {}'.format(' '.join(
+            [ins.name for ins in p.discards.inner['styles']]
+        )))
+    if len(p.discards.inner['bases']) > 0:
+        acc.append('    Bases:  {}'.format(' '.join(
+            [inb.name for inb in p.discards.inner['bases']]
+        )))
 
     if p.finisher is not None:
         acc.append('  Finisher: {}'.format(p.finisher.name))

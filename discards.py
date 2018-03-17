@@ -41,3 +41,29 @@ class Discards:
                 if isinstance(item, Base):
                     found.append(item)
         return found
+
+    @property
+    def inner(self):
+        discarded = {
+            'styles': [],
+            'bases': []
+        }
+        for item in self.q[-1]:
+            if isinstance(item, Style):
+                discarded['styles'].append(item)
+            elif isinstance(item, Base):
+                discarded['bases'].append(item)
+        return discarded
+
+    @property
+    def outer(self):
+        discarded = {
+            'styles': [],
+            'bases': []
+        }
+        for item in self.q[0]:
+            if isinstance(item, Style):
+                discarded['styles'].append(item)
+            elif isinstance(item, Base):
+                discarded['bases'].append(item)
+        return discarded
