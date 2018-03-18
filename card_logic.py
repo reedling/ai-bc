@@ -1,19 +1,21 @@
 class Effects:
-    def __init__(self, modifiers=[], triggers=[]):
+    def __init__(self, modifiers=[], triggers=[], actions=[]):
         self.modifiers = modifiers
         self.triggers = triggers
 
 
 class Modifier:
-    def __init__(self, mtype, val):
+    def __init__(self, mtype, val, opponent=False):
         self.mtype = mtype
         self.val = val
+        self.opponent = opponent
 
 
 class Trigger:
-    def __init__(self, name, actions=[]):
+    def __init__(self, name, actions=[], conditionals=[]):
         self.name = name
         self.actions = actions
+        self.conditionals = conditionals
 
 
 class Action:

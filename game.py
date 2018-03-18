@@ -287,15 +287,23 @@ class Duel:
     def handle_effects(self, effects, actor, nonactor):
         if effects is None:
             return
-
         mods = {}
+        omods = {}
         for m in effects.modifiers:
-            if stacks(m.mtype) and m.mtype in mods:
-                mods[m.mtype] += m.val
+            if m.opponent:
+                if stacks(m.mtype) and m.mtype in omods:
+                    omods[m.mtype] += m.val
+                else:
+                    omods[m.mtype] = m.val
             else:
-                mods[m.mtype] = m.val
+                if stacks(m.mtype) and m.mtype in mods:
+                    mods[m.mtype] += m.val
+                else:
+                    mods[m.mtype] = m.val
         for mod in mods:
             actor.apply_modifier(mod, mods[mod])
+        for omod in omods:
+            nonactor.apply_modifier(omod, omods[omod])
 
     def we_have_a_winner(self):
         return self.winner is not None

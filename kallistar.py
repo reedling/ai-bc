@@ -1,5 +1,5 @@
 from card import Style, Base
-from card_logic import Effects, Modifier
+from card_logic import Effects, Modifier, Trigger, Action, Conditional
 from selection import Finisher
 from utils import get_standard_bases
 
@@ -15,7 +15,25 @@ class Kallistar:
         ]
         self.bases = get_standard_bases()
         self.bases.extend([
-            Base('Spellbolt', [2, 3, 4, 5, 6], 2, 3)
+            Base('Spellbolt', [2, 3, 4, 5, 6], 2, 3, Effects([], [
+                    Trigger('onHit', [], [
+                        Conditional(
+                            'equals',
+                            lambda state: get_form(state) == 'Human',
+                            Effects([
+                                Modifier('power', -2, True)
+                            ])
+                        ),
+                        Conditional(
+                            'equals',
+                            lambda state: get_form(state) == 'Elemental',
+                            Effects([], [], [
+                                Action('pull', [1, 2])
+                            ])
+                        )
+                    ])
+                ]
+            ))
         ])
         self.finishers = [
             Finisher('Energy Beams I', [1, 3, 5], 7, 6, Effects([
@@ -27,3 +45,22 @@ class Kallistar:
                 ]
             ))
         ]
+        self.form = 'Human'
+
+    def get_ante_effects(self):
+        if self.form == 'Human':
+            return Effects([
+                    Modifier('soak', 1)
+                ]
+            )
+        elif self.form == 'Elemental':
+            return Effects([
+                    Modifier('power', 2),
+                    Modifier('priority', 2),
+                    Modifier('lose_life', 1)
+                ]
+            )
+
+
+def get_form(state):
+    return state.p.character.form

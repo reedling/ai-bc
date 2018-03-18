@@ -27,6 +27,8 @@ class Player:
         self.stun_immune = False
         self.can_hit = True
         self.dodge = False
+        self.power = 0
+        self.priority = 0
         self.active = False
 
         if name == 'Training Dummy':
@@ -53,6 +55,8 @@ class Player:
         self.stun_immune = False
         self.can_hit = True
         self.dodge = False
+        self.power = 0
+        self.priority = 0
 
     def get_ante(self, state):
         if self.finisher is not None and self.life <= 7:
@@ -175,7 +179,12 @@ class Player:
         return
 
     def apply_modifier(self, mod, val):
-        if hasattr(self, mod):
+        if mod == 'lose_life':
+            if self.life - val > 0:
+                self.life -= val
+            else:
+                self.life = 1
+        elif hasattr(self, mod):
             if stacks(mod):
                 curr = getattr(self, mod)
                 setattr(self, mod, curr + val)
