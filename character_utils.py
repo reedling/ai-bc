@@ -1,9 +1,11 @@
+from kallistar import Kallistar
 from simple import SimpleBob
 
 
 def get_character_list():
     return [
         'Hikaru',
+        'Kallistar',
         'Khadath',
         'Simple Bob'
     ]
@@ -11,6 +13,7 @@ def get_character_list():
 
 def character_by_name(name):
     chars = {
+        'Kallistar': Kallistar(),
         'Simple Bob': SimpleBob()
     }
 
