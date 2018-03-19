@@ -9,45 +9,42 @@ def get_standard_bases():
         Base('Dash', None, None, 9, Effects([
                 Modifier('can_hit', False)
             ], [
-                Trigger('afterActivating', [
+                Trigger('afterActivating', Effects([], [], [
                     Action('move', [1, 2, 3], [
                         Conditional(
-                            'changes',
+                            None,
                             lambda state: left_of_opponent(state),
                             Effects([
                                 Modifier('dodge', True)
-                            ])
+                            ]),
+                            None,
+                            'changes'
                         )
                     ])
-                ])
+                ]))
             ]
         )),
         Base('Grasp', 1, 2, 5, Effects([], [
-                Trigger('onHit', [
-                    Action('grapple', 1)
-                ])
-            ]
-        )),
+            Trigger('onHit', Effects([], [], [
+                Action('grapple', 1)
+            ]))
+        ])),
         Base('Drive', 1, 3, 4, Effects([], [
-                Trigger('beforeActivating', [
-                    Action('advance', [1, 2])
-                ])
-            ]
-        )),
+            Trigger('beforeActivating', Effects([], [], [
+                Action('advance', [1, 2])
+            ]))
+        ])),
         Base('Strike', 1, 4, 3, Effects([
-                Modifier('stun_guard', 5)
-            ]
-        )),
+            Modifier('stun_guard', 5)
+        ])),
         Base('Shot', [1, 2, 3, 4], 3, 2, Effects([
-                Modifier('stun_guard', 2)
-            ]
-        )),
+            Modifier('stun_guard', 2)
+        ])),
         Base('Burst', [2, 3], 3, 1, Effects([], [
-                Trigger('startOfBeat', [
-                    Action('retreat', [1, 2])
-                ])
-            ]
-        ))
+            Trigger('startOfBeat', Effects([], [], [
+                Action('retreat', [1, 2])
+            ]))
+        ]))
     ]
 
 

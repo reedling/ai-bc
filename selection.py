@@ -49,10 +49,10 @@ class Pair:
         effs = []
         for st in self.style.effects.triggers:
             if st.name == trigger:
-                effs.append(st)
+                effs.append(st.effects)
         for bt in self.base.effects.triggers:
             if bt.name == trigger:
-                effs.append(bt)
+                effs.append(bt.effects)
         return effs
 
     def __str__(self):

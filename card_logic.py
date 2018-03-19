@@ -1,7 +1,9 @@
 class Effects:
-    def __init__(self, modifiers=[], triggers=[], actions=[]):
+    def __init__(self, modifiers=[], triggers=[], actions=[], conditionals=[]):
         self.modifiers = modifiers
         self.triggers = triggers
+        self.actions = actions
+        self.conditionals = conditionals
 
 
 class Modifier:
@@ -12,10 +14,9 @@ class Modifier:
 
 
 class Trigger:
-    def __init__(self, name, actions=[], conditionals=[]):
+    def __init__(self, name, effects=Effects()):
         self.name = name
-        self.actions = actions
-        self.conditionals = conditionals
+        self.effects = effects
 
 
 class Action:
@@ -68,8 +69,10 @@ class Behavior:
 
 
 class Conditional:
-    def __init__(self, expected_val, fn, if_result=None, else_result=None):
-        self.expected_val = expected_val
+    def __init__(self, expected, fn, if_result=None, else_result=None,
+                 type='equals'):
+        self.expected = expected
         self.fn = fn
         self.if_result = if_result
         self.else_result = else_result
+        self.type = type

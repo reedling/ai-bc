@@ -30,6 +30,7 @@ class Player:
         self.power = 0
         self.priority = 0
         self.active = False
+        self.actions = []
 
         if name == 'Training Dummy':
             self.character = Dummy()
@@ -57,6 +58,7 @@ class Player:
         self.dodge = False
         self.power = 0
         self.priority = 0
+        self.actions = []
 
     def get_ante(self, state):
         if self.finisher is not None and self.life <= 7:
@@ -195,6 +197,15 @@ class Player:
         selection = self.selection
         for mod in selection.modifiers:
             self.apply_modifier(mod, selection.modifiers[mod])
+
+    def grant_action(self, action):
+        self.actions.append(action)
+
+    def remove_action(self, action):
+        self.actions.remove(action)
+
+    def get_effects(self, trigger):
+        return self.selection.get_effects(trigger)
 
     def get_actions(self, trigger):
         return get_possible(self.selection, trigger)

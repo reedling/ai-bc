@@ -158,13 +158,13 @@ class Duel:
             return True
 
     def coordinate_start_of_beat(self):
-        act = self.active_p
-        react = self.reactive_p
+        actor = self.active_p
+        reactor = self.reactive_p
         trigger = 'startOfBeat'
-        active_actions = act.get_actions(trigger)
-        self.coordinate_actions(act, react, trigger, active_actions)
-        reactive_actions = react.get_actions(trigger)
-        self.coordinate_actions(react, act, trigger, reactive_actions)
+        self.handle_effects(actor.get_effects(trigger), actor, reactor)
+        self.coordinate_actions(actor, reactor, trigger)
+        self.handle_effects(reactor.get_effects(trigger), reactor, actor)
+        self.coordinate_actions(reactor, actor, trigger)
 
     def coordinate_attack(self, atkr, dfdr):
         if (not atkr.stunned):
@@ -183,13 +183,13 @@ class Duel:
 
     def coordinate_before_activating(self, atkr, dfdr):
         trigger = 'beforeActivating'
-        actions = atkr.get_actions(trigger)
-        self.coordinate_actions(atkr, dfdr, trigger, actions)
+        self.handle_effects(atkr.get_effects(trigger), atkr, dfdr)
+        self.coordinate_actions(atkr, dfdr, trigger)
 
     def coordinate_on_hit(self, atkr, dfdr):
         trigger = 'onHit'
-        actions = atkr.get_actions(trigger)
-        self.coordinate_actions(atkr, dfdr, trigger, actions)
+        self.handle_effects(atkr.get_effects(trigger), atkr, dfdr)
+        self.coordinate_actions(atkr, dfdr, trigger)
 
     def apply_damage(self, atkr, dfdr):
         damage = atkr.selection.power
@@ -201,22 +201,22 @@ class Duel:
 
     def coordinate_on_damage(self, atkr, dfdr):
         trigger = 'onDamage'
-        actions = atkr.get_actions(trigger)
-        self.coordinate_actions(atkr, dfdr, trigger, actions)
+        self.handle_effects(atkr.get_effects(trigger), atkr, dfdr)
+        self.coordinate_actions(atkr, dfdr, trigger)
 
     def coordinate_after_activating(self, atkr, dfdr):
         trigger = 'afterActivating'
-        actions = atkr.get_actions(trigger)
-        self.coordinate_actions(atkr, dfdr, trigger, actions)
+        self.handle_effects(atkr.get_effects(trigger), atkr, dfdr)
+        self.coordinate_actions(atkr, dfdr, trigger)
 
     def coordinate_end_of_beat(self):
         actor = self.active_p
         reactor = self.reactive_p
         trigger = 'endOfBeat'
-        active_actions = actor.get_actions(trigger)
-        self.coordinate_actions(actor, reactor, trigger, active_actions)
-        reactive_actions = reactor.get_actions(trigger)
-        self.coordinate_actions(reactor, actor, trigger, reactive_actions)
+        self.handle_effects(actor.get_effects(trigger), actor, reactor)
+        self.coordinate_actions(actor, reactor, trigger)
+        self.handle_effects(reactor.get_effects(trigger), actor, reactor)
+        self.coordinate_actions(reactor, actor, trigger)
 
     def coordinate_recycle(self):
         if self.we_have_a_winner():
@@ -234,30 +234,24 @@ class Duel:
             self.active_p.recycle()
             self.reactive_p.recycle()
 
-    def coordinate_actions(self, actor, nonactor, trigger, actions):
+    def coordinate_actions(self, actor, nonactor, trigger):
         state = self.state_for_player(actor, nonactor)
-        permitted = [a for a in actions if state.permits_action(a)]
+        permitted = [a for a in actor.actions if state.permits_action(a)]
         while len(permitted) > 0:
             chosen, behavior = actor.get_behavior(permitted, state, trigger)
             self.execute([behavior], actor, nonactor)
-            actions.remove(chosen)
+            actor.remove_action(chosen)
             state = self.state_for_player(actor, nonactor)
-            permitted = [a for a in actions if state.permits_action(a)]
+            permitted = [a for a in actor.actions if state.permits_action(a)]
 
     def execute(self, behaviors, actor, nonactor):
         def ex_with_conditionals(behavior, behavior_execution):
             if len(behavior.conditionals) == 0:
                 behavior_execution()
             else:
-                for c in behavior.conditionals:
-                    if c.expected_val == 'changes':
-                        before = c.fn(self.state_for_player(actor, nonactor))
-                        behavior_execution()
-                        after = c.fn(self.state_for_player(actor, nonactor))
-                        if (before != after):
-                            self.handle_effects(c.if_result, actor, nonactor)
-                        else:
-                            self.handle_effects(c.else_result, actor, nonactor)
+                self.handle_conditionals(behavior.conditionals,
+                                         actor, nonactor,
+                                         behavior_execution)
 
         def ex(behavior):
             if behavior.btype == 'advance':
@@ -287,9 +281,18 @@ class Duel:
     def handle_effects(self, effects, actor, nonactor):
         if effects is None:
             return
+
+        if not isinstance(effects, list):
+            effects = [effects]
+        for e in effects:
+            self.handle_modifiers(e.modifiers, actor, nonactor)
+            self.grant_actions(e.actions, actor, nonactor)
+            self.handle_conditionals(e.conditionals, actor, nonactor)
+
+    def handle_modifiers(self, modifiers, actor, nonactor):
         mods = {}
         omods = {}
-        for m in effects.modifiers:
+        for m in modifiers:
             if m.opponent:
                 if stacks(m.mtype) and m.mtype in omods:
                     omods[m.mtype] += m.val
@@ -304,6 +307,30 @@ class Duel:
             actor.apply_modifier(mod, mods[mod])
         for omod in omods:
             nonactor.apply_modifier(omod, omods[omod])
+
+    def grant_actions(self, actions, actor, nonactor):
+        for a in actions:
+            actor.grant_action(a)
+
+    def handle_conditionals(self, conditionals, actor, nonactor,
+                            behavior_execution=None):
+        before = {}
+        for c in conditionals:
+            if c.type == 'changes':
+                before[c] = c.fn(self.state_for_player(actor, nonactor))
+            else:
+                if c.fn(self.state_for_player(actor, nonactor)) == c.expected:
+                    self.handle_effects(c.if_result, actor, nonactor)
+                else:
+                    self.handle_effects(c.else_result, actor, nonactor)
+        if behavior_execution is not None:
+            behavior_execution()
+        for cond in before:
+            beforeVal = before[cond]
+            if cond.fn(self.state_for_player(actor, nonactor)) != beforeVal:
+                self.handle_effects(cond.if_result, actor, nonactor)
+            else:
+                self.handle_effects(cond.else_result, actor, nonactor)
 
     def we_have_a_winner(self):
         return self.winner is not None
