@@ -118,15 +118,15 @@ class Duel:
         #    outside of the styles/bases themselves as well
         trigger = 'reveal'
         if self.active_p is None:
-            actor_effects = actor.get_effects(trigger)
-            reactor_effects = reactor.get_effects(trigger)
+            p1_effects = self.p1.get_effects(trigger)
+            p2_effects = self.p2.get_effects(trigger)
             val = randint(0, 1)
             if val == 0:
-                self.handle_effects(actor_effects, actor, reactor)
-                self.handle_effects(reactor_effects, reactor, actor)
+                self.handle_effects(p1_effects, self.p1, self.p2)
+                self.handle_effects(p2_effects, self.p2, self.p1)
             else:
-                self.handle_effects(reactor_effects, reactor, actor)
-                self.handle_effects(actor_effects, actor, reactor)
+                self.handle_effects(p2_effects, self.p2, self.p1)
+                self.handle_effects(p1_effects, self.p1, self.p2)
         else:
             act_effects = active_p.get_effects(trigger)
             react_effects = reactive_p.get_effects(trigger)
