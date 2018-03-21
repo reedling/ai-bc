@@ -303,12 +303,16 @@ class Duel:
         omods = {}
         for m in modifiers:
             if m.opponent:
-                if stacks(m.mtype) and m.mtype in omods:
+                if m.mtype == 'stun' and not nonactor.stun_immune:
+                    nonactor.stunned = True
+                elif stacks(m.mtype) and m.mtype in omods:
                     omods[m.mtype] += m.val
                 else:
                     omods[m.mtype] = m.val
             else:
-                if callable(m.mtype):
+                if m.mtype == 'stun' and not actor.stun_immune:
+                    actor.stunned = True
+                elif callable(m.mtype):
                     m.mtype(m.val)
                 elif stacks(m.mtype) and m.mtype in mods:
                     mods[m.mtype] += m.val
