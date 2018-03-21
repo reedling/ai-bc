@@ -68,6 +68,7 @@ def choose_random_valid_behavior(actions, state):
 
 def stacks(mod):
     return mod in [
+        'lose_life',
         'power',
         'priority',
         'soak',
