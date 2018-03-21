@@ -175,11 +175,6 @@ class Player:
     def has_playable_bases(self):
         return len(self.available_bases) > 0
 
-    def apply_reveal_effects(self):
-        # need to implement this
-        # will probably need game state
-        return
-
     def apply_modifier(self, mod, val):
         if mod == 'lose_life':
             if self.life - val > 0:

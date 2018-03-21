@@ -135,12 +135,14 @@ class Duel:
         return self.handle_priority_selection(p1_selection, p2_selection)
 
     def handle_priority_selection(self, p1_selection, p2_selection):
-        if p1_selection.priority > p2_selection.priority:
+        p1_pri = p1_selection.priority + p1.priority
+        p2_pri = p2_selection.priority + p2.priority
+        if p1_pri > p2_pri:
             self.active_p = self.p1
             self.active_p.active = True
             self.reactive_p = self.p2
             self.reactive_p.active = False
-        elif p1_selection.priority < p2_selection.priority:
+        elif p1_pri < p2_pri:
             self.active_p = self.p2
             self.active_p.active = True
             self.reactive_p = self.p1
