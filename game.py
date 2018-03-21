@@ -308,7 +308,9 @@ class Duel:
                 else:
                     omods[m.mtype] = m.val
             else:
-                if stacks(m.mtype) and m.mtype in mods:
+                if callable(m.mtype):
+                    m.mtype(m.val)
+                elif stacks(m.mtype) and m.mtype in mods:
                     mods[m.mtype] += m.val
                 else:
                     mods[m.mtype] = m.val

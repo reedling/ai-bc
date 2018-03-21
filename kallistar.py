@@ -23,7 +23,7 @@ class Kallistar:
                         'Elemental',
                         lambda state: get_form(state),
                         Effects([
-                            Modifier('change_form', 'Human')
+                            Modifier(self.change_form, 'Human')
                         ])
                     )
                 ]))
@@ -100,7 +100,7 @@ class Kallistar:
                         'Human',
                         lambda state: get_form(state),
                         Effects([
-                            Modifier('change_form', 'Elemental')
+                            Modifier(self.change_form, 'Elemental')
                         ])
                     )
                 ]))
@@ -148,6 +148,9 @@ class Kallistar:
                 Modifier('priority', 2),
                 Modifier('lose_life', 1)
             ])
+
+    def change_form(self, new_form):
+        self.form = new_form
 
 
 def get_form(state):
