@@ -199,8 +199,11 @@ class Player:
     def remove_action(self, action):
         self.actions.remove(action)
 
-    def get_effects(self, trigger):
-        return self.selection.get_effects(trigger)
+    def get_effects(self, trigger, passed_selection=None):
+        if self.selection is not None:
+            return self.selection.get_effects(trigger)
+        else:
+            return passed_selection.get_effects(trigger)
 
     def get_actions(self, trigger):
         return get_possible(self.selection, trigger)

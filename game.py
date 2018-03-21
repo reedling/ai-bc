@@ -118,8 +118,8 @@ class Duel:
         #    outside of the styles/bases themselves as well
         trigger = 'reveal'
         if self.active_p is None:
-            p1_effects = self.p1.get_effects(trigger)
-            p2_effects = self.p2.get_effects(trigger)
+            p1_effects = self.p1.get_effects(trigger, p1_selection)
+            p2_effects = self.p2.get_effects(trigger, p2_selection)
             val = randint(0, 1)
             if val == 0:
                 self.handle_effects(p1_effects, self.p1, self.p2)
@@ -128,15 +128,17 @@ class Duel:
                 self.handle_effects(p2_effects, self.p2, self.p1)
                 self.handle_effects(p1_effects, self.p1, self.p2)
         else:
-            act_effects = active_p.get_effects(trigger)
-            react_effects = reactive_p.get_effects(trigger)
+            a = p1_selection if self.active_p is self.p1 else p2_selection
+            r = p1_selection if self.reactive_p is self.p1 else p2_selection
+            act_effects = self.active_p.get_effects(trigger, a)
+            react_effects = self.reactive_p.get_effects(trigger, r)
             self.handle_effects(act_effects, self.active_p, self.reactive_p)
             self.handle_effects(react_effects, self.reactive_p, self.active_p)
         return self.handle_priority_selection(p1_selection, p2_selection)
 
     def handle_priority_selection(self, p1_selection, p2_selection):
-        p1_pri = p1_selection.priority + p1.priority
-        p2_pri = p2_selection.priority + p2.priority
+        p1_pri = p1_selection.priority + self.p1.priority
+        p2_pri = p2_selection.priority + self.p2.priority
         if p1_pri > p2_pri:
             self.active_p = self.p1
             self.active_p.active = True
