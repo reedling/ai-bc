@@ -215,7 +215,7 @@ class Duel:
         trigger = 'endOfBeat'
         self.handle_effects(actor.get_effects(trigger), actor, reactor)
         self.coordinate_actions(actor, reactor, trigger)
-        self.handle_effects(reactor.get_effects(trigger), actor, reactor)
+        self.handle_effects(reactor.get_effects(trigger), reactor, actor)
         self.coordinate_actions(reactor, actor, trigger)
 
     def coordinate_recycle(self):

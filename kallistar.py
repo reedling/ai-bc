@@ -7,26 +7,119 @@ from utils import get_standard_bases
 class Kallistar:
     def __init__(self):
         self.styles = [
-            Style('Flare', 'yellow', 0, 3, 0),
-            Style('Caustic', 'green', 0, 1, -1),
-            Style('Blazing', 'blue', 0, 0, 1),
-            Style('Volcanic', 'orange', [2, 3, 4], 0, 0),
-            Style('Ignition', 'red', 0, 1, -1)
+            Style('Flare', 'yellow', 0, 3, 0, Effects([], [
+                Trigger('reveal', Effects([], [], [], [
+                    Conditional(
+                        'Human',
+                        lambda state: get_form(state),
+                        Effects([
+                            Modifier('lose_life', 3),
+                            Modifier('priority', 3)
+                        ])
+                    )
+                ])),
+                Trigger('endOfBeat', Effects([], [], [], [
+                    Conditional(
+                        'Elemental',
+                        lambda state: get_form(state),
+                        Effects([
+                            Modifier('change_form', 'Human')
+                        ])
+                    )
+                ]))
+            ])),
+            Style('Caustic', 'green', 0, 1, -1, Effects([], [
+                Trigger('onHit', Effects([], [], [], [
+                    Conditional(
+                        'Elemental',
+                        lambda state: get_form(state),
+                        Effects([
+                            Modifier('stun', True, True)
+                        ])
+                    )
+                ]))], [], [
+                Conditional(
+                    'Human',
+                    lambda state: get_form(state),
+                    Effects([
+                        Modifier('soak', 2)
+                    ])
+                )
+            ])),
+            Style('Blazing', 'blue', 0, 0, 1, Effects([], [
+                Trigger('afterActivating', Effects([], [], [], [
+                    Conditional(
+                        'Human',
+                        lambda state: get_form(state),
+                        Effects([], [], [
+                            Action('move', [1, 2])
+                        ])
+                    )
+                ]))], [], [
+                Conditional(
+                    'Elemental',
+                    lambda state: get_form(state),
+                    Effects([
+                        Modifier('range', [0, 1])
+                    ])
+                )
+            ])),
+            Style('Volcanic', 'orange', [2, 3, 4], 0, 0, Effects([], [
+                Trigger('onHit', Effects([], [], [], [
+                    Conditional(
+                        'Elemental',
+                        lambda state: get_form(state),
+                        Effects([
+                            Modifier('priority', -2, True, True)
+                        ])
+                    )
+                ])),
+                Trigger('endOfBeat', Effects([], [], [], [
+                    Conditional(
+                        'Human',
+                        lambda state: get_form(state),
+                        Effects([
+                            Modifier('teleport', float('inf'))
+                        ])
+                    )
+                ]))
+            ])),
+            Style('Ignition', 'red', 0, 1, -1, Effects([], [
+                Trigger('reveal', Effects([], [], [], [
+                    Conditional(
+                        'Elemental',
+                        lambda state: get_form(state),
+                        Effects([
+                            Modifier('lose_life', 3),
+                            Modifier('power', 3)
+                        ])
+                    )
+                ])),
+                Trigger('endOfBeat', Effects([], [], [], [
+                    Conditional(
+                        'Human',
+                        lambda state: get_form(state),
+                        Effects([
+                            Modifier('change_form', 'Elemental')
+                        ])
+                    )
+                ]))
+            ]))
         ]
         self.bases = get_standard_bases()
         self.bases.extend([
             Base('Spellbolt', [2, 3, 4, 5, 6], 2, 3, Effects([], [
                 Trigger('onHit', Effects([], [], [], [
                     Conditional(
-                        'equals',
-                        lambda state: get_form(state) == 'Human',
+                        'Human',
+                        lambda state: get_form(state),
                         Effects([
                             Modifier('power', -2, True)
                         ])
                     ),
                     Conditional(
-                        'equals',
-                        lambda state: get_form(state) == 'Elemental',
+                        'Elemental',
+                        lambda state: get_form(state),
                         Effects([], [], [
                             Action('pull', [1, 2])
                         ])
