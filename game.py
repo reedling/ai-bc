@@ -116,17 +116,22 @@ class Duel:
         # Will need to apply special handling for Special Actions
         # Will need to take into account special modifiers
         #    outside of the styles/bases themselves as well
+        trigger = 'reveal'
         if self.active_p is None:
+            actor_effects = actor.get_effects(trigger)
+            reactor_effects = reactor.get_effects(trigger)
             val = randint(0, 1)
             if val == 0:
-                self.p1.apply_reveal_effects()
-                self.p2.apply_reveal_effects()
+                self.handle_effects(actor_effects, actor, reactor)
+                self.handle_effects(reactor_effects, reactor, actor)
             else:
-                self.p2.apply_reveal_effects()
-                self.p1.apply_reveal_effects()
+                self.handle_effects(reactor_effects, reactor, actor)
+                self.handle_effects(actor_effects, actor, reactor)
         else:
-            self.active_p.apply_reveal_effects()
-            self.reactive_p.apply_reveal_effects()
+            act_effects = active_p.get_effects(trigger)
+            react_effects = reactive_p.get_effects(trigger)
+            self.handle_effects(act_effects, self.active_p, self.reactive_p)
+            self.handle_effects(react_effects, self.reactive_p, self.active_p)
         return self.handle_priority_selection(p1_selection, p2_selection)
 
     def handle_priority_selection(self, p1_selection, p2_selection):
