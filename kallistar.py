@@ -78,8 +78,8 @@ class Kallistar:
                     Conditional(
                         'Human',
                         lambda state: get_form(state),
-                        Effects([
-                            Modifier('teleport', float('inf'))
+                        Effects([], [], [
+                            Action('teleport', range(0, 6))
                         ])
                     )
                 ]))
