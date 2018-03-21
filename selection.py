@@ -26,7 +26,7 @@ class Pair:
     @property
     def power(self):
         if self.style.power is None or self.base.power is None:
-            return None
+            return 0
         else:
             return self.style.power + self.base.power
 
