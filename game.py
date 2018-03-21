@@ -199,7 +199,7 @@ class Duel:
         self.coordinate_actions(atkr, dfdr, trigger)
 
     def apply_damage(self, atkr, dfdr):
-        damage = atkr.selection.power
+        damage = atkr.selection.power + atkr.power
         if damage is None or damage == 0:
             return 0
 
