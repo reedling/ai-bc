@@ -5,7 +5,10 @@ from character_utils import character_by_name
 from discards import Discards
 from dummy import DummyAgent, Dummy
 from selection import Pair
-from user import UserAgentCLI
+try:
+    from user import UserAgentCLI
+except Error:
+    print('skipping UserAgentCLI import')
 from utils import (choose_random_valid_behavior, get_possible, stacks)
 
 
