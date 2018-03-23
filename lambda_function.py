@@ -3,6 +3,11 @@ BattleCON AI
 POC lambda interface for Alexa Skill
 """
 
+from board import Board
+from character_utils import get_character_list
+from game import Duel
+from player import Player
+
 
 def build_speechlet_response(title, output, reprompt_text, should_end_session):
     return {
@@ -36,7 +41,11 @@ def build_response(session_attributes, speechlet_response):
 def run_game():
     session_attributes = {}
     card_title = 'Welcome'
-    speech_output = 'Under Construction'
+    speech_output = Duel(
+        Player('Simple Bob', True),
+        Player('Kallistar', True),
+        Board()
+    )
     reprompt_text = None
     should_end_session = True
     return build_response(

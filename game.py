@@ -42,7 +42,7 @@ class Duel:
             if self.winner is None:
                 self.beat += 1
 
-        self.handle_duel_end()
+        return self.handle_duel_end()
 
     def coordinate_beat(self):
         self.p1.refresh()
@@ -360,13 +360,16 @@ class Duel:
         m_early = m + ' - on beat {}'
         if self.winner is None:
             if self.p1.life > self.p2.life:
-                print(m.format(self.p1, 'BEAT', self.p2))
+                res = m.format(self.p1, 'BEAT', self.p2)
             elif self.p1.life < self.p2.life:
-                print(m.format(self.p2, 'BEAT', self.p1))
+                res = m.format(self.p2, 'BEAT', self.p1)
             else:  # Equal life in this case
                 if self.reactive_p is not None:
-                    print(m_r.format(self.reactive_p, 'BEAT', self.active_p))
+                    res = m_r.format(self.reactive_p, 'BEAT', self.active_p)
                 else:
-                    print(m.format(self.p1, 'TIED', self.p2))
+                    res = m.format(self.p1, 'TIED', self.p2)
         else:
-            print(m_early.format(self.winner, 'BEAT', self.loser, self.beat))
+            res = m_early.format(self.winner, 'BEAT', self.loser, self.beat)
+
+        print(res)
+        return res
