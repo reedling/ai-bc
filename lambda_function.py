@@ -29,7 +29,7 @@ def build_response(session_attributes, speechlet_response):
     return {
         'version': '0.1',
         'sessionAttributes': session_attributes,
-        'response', speechlet_response
+        'response': speechlet_response
     }
 
 
