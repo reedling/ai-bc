@@ -7,7 +7,7 @@ from dummy import DummyAgent, Dummy
 from selection import Pair
 try:
     from user import UserAgentCLI
-except Error:
+except:
     print('skipping UserAgentCLI import')
 from utils import (choose_random_valid_behavior, get_possible, stacks)
 
