@@ -51,7 +51,7 @@ def run_game():
 
 
 def on_launch(launch_request, session):
-    return get_welcome_response()
+    return run_game()
 
 
 def lambda_handler(event, context):
