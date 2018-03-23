@@ -45,7 +45,7 @@ def run_game():
         Player('Simple Bob', True),
         Player('Kallistar', True),
         Board()
-    )
+    ).start()
     reprompt_text = None
     should_end_session = True
     return build_response(
