@@ -89,7 +89,7 @@ class Player:
         if self.selection.atk_range is not None:
             all_mods = [m for m in self.range_mods]
             all_mods.append(self.selection.atk_range)
-            combos=[[]]
+            combos = [[]]
             for m in all_mods:
                 t = []
                 for y in m:
