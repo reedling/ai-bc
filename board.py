@@ -26,8 +26,7 @@ class Board:
         return False
 
     def get_positions_in_range(self, atkr):
-        atk_range = atkr.selection.atk_range
-        return atk_range
+        return atkr.atk_range
 
     def retreat(self, actor, nonactor, distance):
         if actor.position < nonactor.position:

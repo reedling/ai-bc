@@ -34,6 +34,7 @@ class Player:
         self.priority = 0
         self.active = False
         self.actions = []
+        self.range_mods = []
 
         if name == 'Training Dummy':
             self.character = Dummy()
@@ -62,6 +63,7 @@ class Player:
         self.power = 0
         self.priority = 0
         self.actions = []
+        self.range_mods = []
 
     def get_ante(self, state):
         if self.finisher is not None and self.life <= 7:
@@ -81,6 +83,22 @@ class Player:
             'life': self.life,
             'position': self.position
         }
+
+    @property
+    def atk_range(self):
+        if self.selection.atk_range is not None:
+            all_mods = [m for m in self.range_mods]
+            all_mods.append(self.selection.atk_range)
+            combos=[[]]
+            for m in all_mods:
+                t = []
+                for y in m:
+                    for i in combos:
+                        t.append(i+[y])
+                combos = t
+            return sorted(set([sum(c) for c in combos]))
+        else:
+            return None
 
     def discard(self, to_discard):
         self.discard_inner(to_discard)

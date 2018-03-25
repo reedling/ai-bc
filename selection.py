@@ -63,17 +63,11 @@ class Finisher:
     def __init__(self, name, atk_range, power, priority,
                  effects=Effects()):
         self.name = name
-        self.atk_range = atk_range
+        instance_or_none = isinstance(atk_range, list) or atk_range is None
+        self.atk_range = atk_range if instance_or_none else [atk_range]
         self.power = power
         self.priority = priority
         self.effects = effects
-
-    @property
-    def atk_range_options(self):
-        if not isinstance(self.atk_range, list):
-            return [self.atk_range]
-        else:
-            return self.atk_range
 
     @property
     def modifiers(self):
