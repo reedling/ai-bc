@@ -79,7 +79,7 @@ class Kallistar:
                         'Human',
                         lambda state: get_form(state),
                         Effects([], [], [
-                            Action('teleport', 'empty')
+                            Action('teleport', 'all')
                         ])
                     )
                 ]))

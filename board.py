@@ -67,7 +67,10 @@ class Board:
                     self.set(player, player.position + 1, 'right')
 
     def teleport(self, player, position):
-        return
+        if player.position is not None:
+            self.spaces[player.position].pop('player')
+        self.spaces[position]['player'] = player
+        player.position = position
 
     def set(self, player, position, direction=None):
         if 'player' in self.spaces[position]:
@@ -97,6 +100,9 @@ class Board:
             self.spaces[position]['player'] = player
             player.position = position
         # need to keep track of positions traveled through
+
+    def position_is_occupied(self, position):
+        return 'player' in self.spaces[position]
 
     @property
     def status(self):

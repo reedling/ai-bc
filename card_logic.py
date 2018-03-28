@@ -21,10 +21,23 @@ class Trigger:
 
 
 class Action:
-    def __init__(self, atype, opts, conditionals=[]):
+    def __init__(self, atype, opts=[], conditionals=[]):
         self.atype = atype
         self.opts = opts
         self.conditionals = conditionals
+        if atype == 'teleport' and opts == 'all':
+            self.needs_state_for_behaviors = True
+        else:
+            self.needs_state_for_behaviors = False
+
+    def behaviors_for_state(self, state):
+        behaviors = []
+        if self.atype == 'teleport' and self.opts == 'all':
+            for pos in range(state.board.length):
+                behaviors.append(Behavior('teleport', pos, self.conditionals))
+        else:
+            behaviors = self.behaviors
+        return behaviors
 
     def get_behaviors(self, atype, magnitude):
         if atype == 'grapple':

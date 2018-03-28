@@ -6,18 +6,20 @@ class State:
         self.beat = beat
 
     def get_permitted_behaviors(self, action):
-        return [b for b in action.behaviors if self.permits(b)]
+        a = action
+        need_state = action.needs_state_for_behaviors
+        behaviors = a.behaviors_for_state(self) if need_state else a.behaviors
+        return [b for b in behaviors if self.permits(b)]
 
     def permits_action(self, action):
-        for b in action.behaviors:
-            if self.permits(b):
-                return True
-        return False
+        return len(self.get_permitted_behaviors(action)) > 0
 
     def permits(self, behavior):
         if behavior.is_move():
             x = self.permits_movement(behavior)
             return x
+        elif behavior.btype == 'teleport':
+            return not self.board.position_is_occupied(behavior.val)
         else:
             return True
 

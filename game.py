@@ -283,6 +283,11 @@ class Duel:
                     behavior,
                     lambda: self.board.pull(actor, nonactor, behavior.val)
                 )
+            elif behavior.btype == 'teleport':
+                ex_with_conditionals(
+                    behavior,
+                    lambda: self.board.teleport(actor, behavior.val)
+                )
 
         for b in behaviors:
             ex(b)
