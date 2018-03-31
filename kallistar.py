@@ -70,7 +70,7 @@ class Kallistar:
                         'Elemental',
                         lambda state: get_form(state),
                         Effects([
-                            Modifier('priority', -2, True, True)
+                            Modifier('priority', -2, True, 1)
                         ])
                     )
                 ])),

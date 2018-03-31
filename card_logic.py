@@ -7,11 +7,12 @@ class Effects:
 
 
 class Modifier:
-    def __init__(self, mtype, val, opponent=False, next_beat=False):
+    def __init__(self, mtype, val, opponent=False, onset=0, duration=1):
         self.mtype = mtype
         self.val = val
         self.opponent = opponent
-        self.next_beat = next_beat
+        self.onset = onset
+        self.duration = duration
 
 
 class Trigger:
