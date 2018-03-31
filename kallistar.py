@@ -7,6 +7,42 @@ from utils import get_standard_bases
 class Kallistar:
     def __init__(self):
         self.styles = [
+            Style('Blazing', 'blue', 0, 0, 1, Effects([], [
+                Trigger('afterActivating', Effects([], [], [], [
+                    Conditional(
+                        'Human',
+                        lambda state: get_form(state),
+                        Effects([], [], [
+                            Action('move', [1, 2])
+                        ])
+                    )
+                ]))], [], [
+                Conditional(
+                    'Elemental',
+                    lambda state: get_form(state),
+                    Effects([
+                        Modifier('range', [0, 1])
+                    ])
+                )
+            ])),
+            Style('Caustic', 'green', 0, 1, -1, Effects([], [
+                Trigger('onHit', Effects([], [], [], [
+                    Conditional(
+                        'Elemental',
+                        lambda state: get_form(state),
+                        Effects([
+                            Modifier('stun', True, True)
+                        ])
+                    )
+                ]))], [], [
+                Conditional(
+                    'Human',
+                    lambda state: get_form(state),
+                    Effects([
+                        Modifier('soak', 2)
+                    ])
+                )
+            ])),
             Style('Flare', 'yellow', 0, 3, 0, Effects([], [
                 Trigger('reveal', Effects([], [], [], [
                     Conditional(
@@ -27,42 +63,6 @@ class Kallistar:
                         ])
                     )
                 ]))
-            ])),
-            Style('Caustic', 'green', 0, 1, -1, Effects([], [
-                Trigger('onHit', Effects([], [], [], [
-                    Conditional(
-                        'Elemental',
-                        lambda state: get_form(state),
-                        Effects([
-                            Modifier('stun', True, True)
-                        ])
-                    )
-                ]))], [], [
-                Conditional(
-                    'Human',
-                    lambda state: get_form(state),
-                    Effects([
-                        Modifier('soak', 2)
-                    ])
-                )
-            ])),
-            Style('Blazing', 'blue', 0, 0, 1, Effects([], [
-                Trigger('afterActivating', Effects([], [], [], [
-                    Conditional(
-                        'Human',
-                        lambda state: get_form(state),
-                        Effects([], [], [
-                            Action('move', [1, 2])
-                        ])
-                    )
-                ]))], [], [
-                Conditional(
-                    'Elemental',
-                    lambda state: get_form(state),
-                    Effects([
-                        Modifier('range', [0, 1])
-                    ])
-                )
             ])),
             Style('Volcanic', 'orange', [2, 3, 4], 0, 0, Effects([], [
                 Trigger('onHit', Effects([], [], [], [
