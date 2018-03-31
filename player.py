@@ -77,6 +77,12 @@ class Player:
                     return self.finisher
         return None
 
+    def get_ante_effects(self):
+        if hasattr(self.character, 'get_ante_effects'):
+            return self.character.get_ante_effects();
+        else:
+            return None
+
     @property
     def status(self):
         return {

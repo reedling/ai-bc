@@ -94,6 +94,9 @@ class Duel:
         self.coordinate_recycle()
 
     def coordinate_antes(self):
+        self.handle_effects(self.p1.get_ante_effects(), self.p1, self.p2)
+        self.handle_effects(self.p2.get_ante_effects(), self.p2, self.p1)
+
         def ca(to_ante, next_up, first_invocation, last_ante=None):
             ante = to_ante.get_ante(self.state_for_player(to_ante, next_up))
             if isinstance(ante, Finisher):
