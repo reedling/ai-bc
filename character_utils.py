@@ -4,9 +4,7 @@ from simple import SimpleBob
 
 def get_character_list():
     return [
-        'Hikaru',
         'Kallistar',
-        'Khadath',
         'Simple Bob'
     ]
 
