@@ -93,6 +93,10 @@ def player_state_string_cli(desc, p):
     acc = []
     acc.append('({}) -- {}'.format(desc, p.name))
     acc.append('  Life: {}'.format(p.life))
+    if hasattr(p.character, 'get_state_details'):
+        details = p.character.get_state_details()
+        for key in details:
+            acc.append('  {}: {}'.format(key, details[key]))
 
     if p.selection is not None:
         acc.append('  Selection: {}'.format(str(p.selection)))

@@ -152,6 +152,11 @@ class Kallistar:
     def change_form(self, new_form):
         self.form = new_form
 
+    def get_state_details(self):
+        return {
+            'Form': self.form
+        }
+
 
 def get_form(state):
     return state.p.character.form
