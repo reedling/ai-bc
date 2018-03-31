@@ -32,17 +32,11 @@ class Pair:
 
     @property
     def modifiers(self):
-        mods = {}
+        mods = []
         for sm in self.style.effects.modifiers:
-            if stacks(sm.mtype) and sm.mtype in mods:
-                mods[sm.mtype] += sm.val
-            else:
-                mods[sm.mtype] = sm.val
+            mods.append(sm)
         for bm in self.base.effects.modifiers:
-            if stacks(bm.mtype) and bm.mtype in mods:
-                mods[bm.mtype] += bm.val
-            else:
-                mods[bm.mtype] = bm.val
+            mods.append(bm)
         return mods
 
     def get_effects(self, trigger):
@@ -71,12 +65,9 @@ class Finisher:
 
     @property
     def modifiers(self):
-        mods = {}
+        mods = []
         for m in self.effects.modifiers:
-            if stacks(m.mtype) and m.mtype in mods:
-                mods[m.mtype] += m.val
-            else:
-                mods[m.mtype] = m.val
+            mods.append(m)
         return mods
 
     def get_effects(self, trigger):

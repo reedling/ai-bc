@@ -202,23 +202,34 @@ class Player:
     def has_playable_bases(self):
         return len(self.available_bases) > 0
 
-    def apply_modifier(self, mod, val):
-        if mod == 'lose_life':
-            if self.life - val > 0:
-                self.life -= val
+    def handle_modifier(self, mod):
+        def apply_modifier(m):
+            if m.mtype == 'stun' and not self.stun_immune:
+                self.stunned = True
+            elif callable(m.mtype):
+                m.mtype(m.val)
+            elif m.mtype == 'lose_life':
+                if self.life - m.val > 0:
+                    self.life -= m.val
+                else:
+                    self.life = 1
+            elif hasattr(self, m.mtype):
+                if stacks(m.mtype):
+                    curr = getattr(self, m.mtype)
+                    setattr(self, m.mtype, curr + m.val)
+                else:
+                    setattr(self, m.mtype, m.val)
             else:
-                self.life = 1
-        elif hasattr(self, mod):
-            if stacks(mod):
-                curr = getattr(self, mod)
-                setattr(self, mod, curr + val)
-            else:
-                setattr(self, mod, val)
+                print('Could not apply Modifier: {} {}', m.mtype, m.val)
 
-    def apply_selection_modifiers(self):
-        selection = self.selection
-        for mod in selection.modifiers:
-            self.apply_modifier(mod, selection.modifiers[mod])
+        # if mod.onset == 0:
+            self.apply_modifier(mod)
+        # else:
+        #     self.queue_modifier(mod)
+
+    def handle_selection_modifiers(self):
+        for mod in self.selection.modifiers:
+            self.handle_modifier(mod)
 
     def grant_action(self, action):
         self.actions.append(action)

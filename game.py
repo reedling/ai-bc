@@ -81,8 +81,8 @@ class Duel:
             self.p1.selection = p1_sel
         if self.p2.selection is None:
             self.p2.selection = p2_sel
-        self.p1.apply_selection_modifiers()
-        self.p2.apply_selection_modifiers()
+        self.p1.handle_selection_modifiers()
+        self.p2.handle_selection_modifiers()
 
         self.coordinate_start_of_beat()
         self.coordinate_attack(self.active_p, self.reactive_p)
@@ -307,29 +307,17 @@ class Duel:
             self.handle_conditionals(e.conditionals, actor, nonactor)
 
     def handle_modifiers(self, modifiers, actor, nonactor):
-        mods = {}
-        omods = {}
+        mods = []
+        omods = []
         for m in modifiers:
             if m.opponent:
-                if m.mtype == 'stun' and not nonactor.stun_immune:
-                    nonactor.stunned = True
-                elif stacks(m.mtype) and m.mtype in omods:
-                    omods[m.mtype] += m.val
-                else:
-                    omods[m.mtype] = m.val
+                omods.append(m)
             else:
-                if m.mtype == 'stun' and not actor.stun_immune:
-                    actor.stunned = True
-                elif callable(m.mtype):
-                    m.mtype(m.val)
-                elif stacks(m.mtype) and m.mtype in mods:
-                    mods[m.mtype] += m.val
-                else:
-                    mods[m.mtype] = m.val
+                mods.append(m)
         for mod in mods:
-            actor.apply_modifier(mod, mods[mod])
+            actor.handle_modifier(mod)
         for omod in omods:
-            nonactor.apply_modifier(omod, omods[omod])
+            nonactor.handle_modifier(omod)
 
     def grant_actions(self, actions, actor, nonactor):
         for a in actions:
