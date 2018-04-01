@@ -24,17 +24,8 @@ class Player:
         self.played_styles = []
         self.played_bases = []
         self.selection = None
-        self.soak = 0
-        self.stunned = False
-        self.stun_guard = 0
-        self.stun_immune = False
-        self.can_hit = True
-        self.dodge = False
-        self.power = 0
-        self.priority = 0
         self.active = False
-        self.actions = []
-        self.range_mods = []
+        self.refresh()
 
         if name == 'Training Dummy':
             self.character = Dummy()
