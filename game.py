@@ -2,7 +2,6 @@ from random import randint
 
 from selection import Finisher
 from state import State
-from utils import stacks
 
 
 class Duel:

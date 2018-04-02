@@ -1,7 +1,6 @@
 from random import randint
 
 from card_logic import Effects
-from utils import stacks
 
 
 class Pair:

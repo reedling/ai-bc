@@ -1,4 +1,5 @@
 from collections import deque
+from functools import reduce
 from random import choice, randint
 
 from character_utils import character_by_name
@@ -9,7 +10,7 @@ try:
     from user import UserAgentCLI
 except:
     print('skipping UserAgentCLI import')
-from utils import (choose_random_valid_behavior, get_possible, stacks)
+from utils import (choose_random_valid_behavior, get_possible)
 
 
 class Player:
@@ -25,6 +26,7 @@ class Player:
         self.played_bases = []
         self.selection = None
         self.active = False
+        self.modifiers = []
         self.refresh()
 
         if name == 'Training Dummy':
@@ -44,17 +46,91 @@ class Player:
     def __str__(self):
         return self.name + '(' + str(self.life) + ')'
 
+    @property
+    def status(self):
+        return {
+            'life': self.life,
+            'position': self.position
+        }
+
+    @property
+    def soak(self):
+        return self.get_mod_val('soak')
+
+    @property
+    def stun_guard(self):
+        return self.get_mod_val('stun_guard')
+
+    @property
+    def stun_immune(self):
+        return self.get_mod_val('stun_immune', False)
+
+    @property
+    def can_hit(self):
+        return self.get_mod_val('can_hit', True)
+
+    @property
+    def dodge(self):
+        return self.get_mod_val('dodge', False)
+
+    @property
+    def power(self):
+        return self.get_mod_val('power')
+
+    @property
+    def priority(self):
+        return self.get_mod_val('priority')
+
+    @property
+    def atk_range(self):
+        if self.selection.atk_range is not None:
+            range_mods = self.get_relevant_mods('range')
+            range_mods.append(self.selection.atk_range)
+            combos = [[]]
+            for m in range_mods:
+                t = []
+                for y in m:
+                    for i in combos:
+                        t.append(i+[y])
+                combos = t
+            return sorted(set([sum(c) for c in combos]))
+        else:
+            return None
+
+    def get_mod_val(self, mtype, default=0):
+        relevant = self.get_relevant_mods(mtype)
+        if len(relevant) == 0:
+            return default
+
+        if isinstance(default, bool):
+            for m in relevant:
+                if m.val != default:
+                    return m.val
+            return default
+        elif isinstance(default, (int, float)):
+            return reduce((lambda acc, m: acc+m.val), relevant, default)
+        else:
+            print('Unexpected Mod mtype/def: {} {}'.format(mtype, default))
+            return None
+
+    def get_relevant_mods(self, mtype):
+        def f(m): return m.mtype == mtype
+        return list(filter(f, self.modifiers))
+
     def refresh(self):
-        self.soak = 0
         self.stunned = False
-        self.stun_guard = 0
-        self.stun_immune = False
-        self.can_hit = True
-        self.dodge = False
-        self.power = 0
-        self.priority = 0
         self.actions = []
-        self.range_mods = []
+        self.update_modifiers()
+
+    def update_modifiers(self):
+        for i in range(len(self.modifiers)):
+            if self.modifiers[i].onset == 0:
+                self.modifiers[i].duration -= 1
+            else:
+                self.modifiers[i].onset -= 1
+
+        def f(m): return m.duration > 0
+        self.modifiers = list(filter(f, self.modifiers))
 
     def get_ante(self, state):
         if self.finisher is not None and self.life <= 7:
@@ -71,29 +147,6 @@ class Player:
     def get_ante_effects(self):
         if hasattr(self.character, 'get_ante_effects'):
             return self.character.get_ante_effects()
-        else:
-            return None
-
-    @property
-    def status(self):
-        return {
-            'life': self.life,
-            'position': self.position
-        }
-
-    @property
-    def atk_range(self):
-        if self.selection.atk_range is not None:
-            all_mods = [m for m in self.range_mods]
-            all_mods.append(self.selection.atk_range)
-            combos = [[]]
-            for m in all_mods:
-                t = []
-                for y in m:
-                    for i in combos:
-                        t.append(i+[y])
-                combos = t
-            return sorted(set([sum(c) for c in combos]))
         else:
             return None
 
@@ -194,29 +247,17 @@ class Player:
         return len(self.available_bases) > 0
 
     def handle_modifier(self, mod):
-        def apply_modifier(m):
-            if m.mtype == 'stun' and not self.stun_immune:
-                self.stunned = True
-            elif callable(m.mtype):
-                m.mtype(m.val)
-            elif m.mtype == 'lose_life':
-                if self.life - m.val > 0:
-                    self.life -= m.val
-                else:
-                    self.life = 1
-            elif hasattr(self, m.mtype):
-                if stacks(m.mtype):
-                    curr = getattr(self, m.mtype)
-                    setattr(self, m.mtype, curr + m.val)
-                else:
-                    setattr(self, m.mtype, m.val)
+        if mod.mtype == 'stun' and not self.stun_immune:
+            self.stunned = True
+        elif callable(mod.mtype):
+            mod.mtype(mod.val)
+        elif mod.mtype == 'lose_life':
+            if self.life - mod.val > 0:
+                self.life -= mod.val
             else:
-                print('Could not apply Modifier: {} {}', m.mtype, m.val)
-
-        # if mod.onset == 0:
-            self.apply_modifier(mod)
-        # else:
-        #     self.queue_modifier(mod)
+                self.life = 1
+        else:
+            self.modifiers.append(mod)
 
     def handle_selection_modifiers(self):
         for mod in self.selection.modifiers:
