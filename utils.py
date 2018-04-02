@@ -96,6 +96,10 @@ def player_state_string_cli(desc, p):
         details = p.character.get_state_details()
         for key in details:
             acc.append('  {}: {}'.format(key, details[key]))
+    if len(p.modifiers) > 0:
+        acc.append('  Modifiers:')
+        for m in p.modifiers:
+            acc.append('    ' + str(m))
 
     if p.selection is not None:
         acc.append('  Selection: {}'.format(str(p.selection)))

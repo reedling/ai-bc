@@ -14,6 +14,14 @@ class Modifier:
         self.onset = onset
         self.duration = duration
 
+    def __str__(self):
+        if self.onset == 0:
+            props = (self.mtype, self.val, self.duration)
+            return '{} ({}) - ACTIVE - Duration {}'.format(*props)
+        else:
+            props = (self.mtype, self.val, self.onset, self.duration)
+            return '{} ({}) - Onset in {} - Duration {}'.format(*props)
+
 
 class Trigger:
     def __init__(self, name, effects=Effects()):
