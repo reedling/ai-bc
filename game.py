@@ -80,8 +80,8 @@ class Duel:
             self.p1.selection = p1_sel
         if self.p2.selection is None:
             self.p2.selection = p2_sel
-        self.p1.handle_selection_modifiers()
-        self.p2.handle_selection_modifiers()
+        self.handle_effects(self.p1.get_selection_effects(), self.p1, self.p2)
+        self.handle_effects(self.p2.get_selection_effects(), self.p2, self.p1)
 
         self.coordinate_start_of_beat()
         self.coordinate_attack(self.active_p, self.reactive_p)

@@ -38,7 +38,9 @@ class Pair:
             mods.append(bm)
         return mods
 
-    def get_effects(self, trigger):
+    def get_effects(self, trigger=None):
+        if trigger is None:
+            return [self.style.effects, self.base.effects]
         effs = []
         for st in self.style.effects.triggers:
             if st.name == trigger:
@@ -69,7 +71,9 @@ class Finisher:
             mods.append(m)
         return mods
 
-    def get_effects(self, trigger):
+    def get_effects(self, trigger=None):
+        if trigger is None:
+            return [self.effects]
         effs = []
         for t in self.effects.triggers:
             if t.name == trigger:

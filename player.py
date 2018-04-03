@@ -84,7 +84,9 @@ class Player:
     @property
     def atk_range(self):
         if self.selection.atk_range is not None:
+            def range_val(range_mod): return range_mod.val
             range_mods = self.get_relevant_mods('range')
+            range_mods = list(map(range_val, range_mods))
             range_mods.append(self.selection.atk_range)
             combos = [[]]
             for m in range_mods:
@@ -259,9 +261,8 @@ class Player:
         else:
             self.modifiers.append(mod)
 
-    def handle_selection_modifiers(self):
-        for mod in self.selection.modifiers:
-            self.handle_modifier(mod)
+    def get_selection_effects(self):
+        return self.selection.get_effects()
 
     def grant_action(self, action):
         self.actions.append(action)
