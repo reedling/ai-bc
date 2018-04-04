@@ -4,6 +4,8 @@ from selection import Finisher
 from state import State
 
 
+# With 2 players and a board, coordinates a single duel.
+# Invoke start() to kick off duel, which returns result string.
 class Duel:
     def __init__(self, p1, p2, board):
         self.p1 = p1
@@ -33,6 +35,8 @@ class Duel:
         )
         self.board.set(self.p1, 2)
         self.board.set(self.p2, 4)
+
+        # Play 15 beats or until one player runs out of life.
         while (self.p1.life > 0
                and self.p2.life > 0
                and self.beat < 16):
@@ -41,6 +45,7 @@ class Duel:
             if self.winner is None:
                 self.beat += 1
 
+        # Determine victor (or see if there was a tie).
         return self.handle_duel_end()
 
     def coordinate_beat(self):
@@ -53,12 +58,18 @@ class Duel:
             self.state_for_player(self.p2, self.p1))
 
         ante_finisher = self.coordinate_antes()
+
+        # If a finisher was anted, anteing stops, and we skip to reveal.
+        # (There can be no clashes in this case.)
         if ante_finisher is not None:
             if self.p1.ante_finisher:
                 self.coordinate_reveal(ante_finisher, p2_sel)
             elif self.p2.ante_finisher:
                 self.coordinate_reveal(p1_sel, ante_finisher)
 
+        # If no finisher was anted, we have to check for a clash.
+        # -- While there's a clash, the players have to pick new bases.
+        # -- If they don't have any remaining bases to choose, recycle.
         if ante_finisher is None:
             clash = self.coordinate_reveal(p1_sel, p2_sel)
             while (clash
@@ -80,31 +91,36 @@ class Duel:
             self.p1.selection = p1_sel
         if self.p2.selection is None:
             self.p2.selection = p2_sel
+
+        # Handle effects that are not associated with a particular trigger.
+        # This is often the case for stun_guard and other modifiers.
         self.handle_effects(self.p1.get_selection_effects(), self.p1, self.p2)
         self.handle_effects(self.p2.get_selection_effects(), self.p2, self.p1)
 
+        # Coordinate what are typically the action phases of the beat.
         self.coordinate_start_of_beat()
         self.coordinate_attack(self.active_p, self.reactive_p)
         self.coordinate_attack(self.reactive_p, self.active_p)
-
-        # Note that recycle includes end of beat effects and
-        #  UAs that apply at the end of every beat
         self.coordinate_end_of_beat()
         self.coordinate_recycle()
 
     def coordinate_antes(self):
+        # Some characters/selections have effects that are applied during ante.
         self.handle_effects(self.p1.get_ante_effects(), self.p1, self.p2)
         self.handle_effects(self.p2.get_ante_effects(), self.p2, self.p1)
 
+        # Keep prompting players to ante until both players decide not to or
+        # something ends the ante phase (like an anted finisher).
         def ca(to_ante, next_up, first_invocation, last_ante=None):
             ante = to_ante.get_ante(self.state_for_player(to_ante, next_up))
             if isinstance(ante, Finisher):
                 to_ante.selection = ante
                 return ante
-            # apply ante to board or players as necessary
             if ante is not None or last_ante is not None or first_invocation:
                 return ca(next_up, to_ante, False, ante)
 
+        # If there's no active player yet, randomly determine first ante.
+        # Otherwise, active player antes first.
         if self.active_p is None:
             val = randint(0, 1)
             if val == 0:
@@ -115,9 +131,10 @@ class Duel:
             return ca(self.active_p, self.reactive_p, True)
 
     def coordinate_reveal(self, p1_selection, p2_selection):
-        # Will need to apply special handling for Special Actions
-        # Will need to take into account special modifiers
-        #    outside of the styles/bases themselves as well
+        # Will need to apply special handling for Special Actions.
+        # If there's no active player yet, randomly determine whose
+        # reveal effects are applied first.
+        # Otherwise, active player's effects happen first.
         trigger = 'reveal'
         if self.active_p is None:
             p1_effects = self.p1.get_effects(trigger, p1_selection)
@@ -164,7 +181,7 @@ class Duel:
             self.reactive_p = self.p1
             self.reactive_p.active = False
         # Need to implement finishers matching priority, because this is
-        # not handled in the same way as a normal clash
+        # not handled in the same way as a normal clash.
         else:  # Clash!
             return True
 
