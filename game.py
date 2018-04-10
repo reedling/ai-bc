@@ -7,10 +7,11 @@ from state import State
 # With 2 players and a board, coordinates a single duel.
 # Invoke start() to kick off duel, which returns result string.
 class Duel:
-    def __init__(self, p1, p2, board):
+    def __init__(self, p1, p2, board, do_print=False):
         self.p1 = p1
         self.p2 = p2
         self.board = board
+        self.do_print = do_print
         self.beat = 1
         self.active_p = None
         self.reactive_p = None
@@ -372,16 +373,20 @@ class Duel:
         m_early = m + ' - on beat {}'
         if self.winner is None:
             if self.p1.life > self.p2.life:
+                self.winner = self.p1
                 res = m.format(self.p1, 'BEAT', self.p2)
             elif self.p1.life < self.p2.life:
+                self.winner = self.p2
                 res = m.format(self.p2, 'BEAT', self.p1)
             else:  # Equal life in this case
                 if self.reactive_p is not None:
+                    self.winner = self.reactive_p
                     res = m_r.format(self.reactive_p, 'BEAT', self.active_p)
                 else:
                     res = m.format(self.p1, 'TIED', self.p2)
         else:
             res = m_early.format(self.winner, 'BEAT', self.loser, self.beat)
 
-        print(res)
+        if self.do_print:
+            print(res)
         return res
