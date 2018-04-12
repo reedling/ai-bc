@@ -277,6 +277,10 @@ class Duel:
 
     def coordinate_actions(self, actor, nonactor, trigger):
         state = self.state_for_player(actor, nonactor)
+
+        # As long as the player has valid actions that they can perform,
+        #  get the player to select their specific behavior, execute it,
+        #  and then reevaluate what valid actions are available.
         permitted = [a for a in actor.actions if state.permits_action(a)]
         while len(permitted) > 0:
             chosen, behavior = actor.get_behavior(permitted, state, trigger)
@@ -286,6 +290,10 @@ class Duel:
             permitted = [a for a in actor.actions if state.permits_action(a)]
 
     def execute(self, behaviors, actor, nonactor):
+        # If there are no conditionals associated with the behavior,
+        #  we can just execute it.
+        # If there are conditionals, however, we may need to evaluate
+        #  before/after the execution of the behavior.
         def ex_with_conditionals(behavior, behavior_execution):
             if len(behavior.conditionals) == 0:
                 behavior_execution()
@@ -331,10 +339,14 @@ class Duel:
         if not isinstance(effects, list):
             effects = [effects]
         for e in effects:
+            # Handle all associated modifiers, actions, and conditionals.
+            # Given that conditionals contain other effects, this may
+            #  lead to new effects being handled.
             self.handle_modifiers(e.modifiers, actor, nonactor)
             self.grant_actions(e.actions, actor, nonactor)
             self.handle_conditionals(e.conditionals, actor, nonactor)
 
+    # (Most modifiers apply to the actor, but some apply to their opponent.)
     def handle_modifiers(self, modifiers, actor, nonactor):
         mods = []
         omods = []
@@ -348,10 +360,16 @@ class Duel:
         for omod in omods:
             nonactor.handle_modifier(omod)
 
+    # Adds to the list of actions that are available to the player this beat.
+    # See 'coordinate_actions' above for details on how valid actions are
+    #  chosen and executed.
     def grant_actions(self, actions, actor, nonactor):
         for a in actions:
             actor.grant_action(a)
 
+    # For most conditionals, we just need to evaluate once.
+    # For conditionals with type 'changes' that are associated with actions,
+    #  we must evaluate them both before and after the execution.
     def handle_conditionals(self, conditionals, actor, nonactor,
                             behavior_execution=None):
         before = {}
@@ -365,6 +383,10 @@ class Duel:
                     self.handle_effects(c.else_result, actor, nonactor)
         if behavior_execution is not None:
             behavior_execution()
+
+        # Right now this only has handling for type 'changes'.  May need
+        #  another type for the opposite behavior or even more complex
+        #  conditions.
         for cond in before:
             beforeVal = before[cond]
             if cond.fn(self.state_for_player(actor, nonactor)) != beforeVal:
@@ -384,17 +406,23 @@ class Duel:
         m_r = m + ' - as Reactive Player on last turn'
         m_early = m + ' - on beat {}'
         if self.winner is None:
+            # Ran out of beats instead of a player's life hitting 0
+            #  (or some other win condition).
             if self.p1.life > self.p2.life:
                 self.winner = self.p1
                 res = m.format(self.p1, 'BEAT', self.p2)
             elif self.p1.life < self.p2.life:
                 self.winner = self.p2
                 res = m.format(self.p2, 'BEAT', self.p1)
-            else:  # Equal life in this case
+            else:  # Players have equal life in this case.
+                # Reactive player wins on a tie.
                 if self.reactive_p is not None:
                     self.winner = self.reactive_p
                     res = m_r.format(self.reactive_p, 'BEAT', self.active_p)
                 else:
+                    # This seems improbabl3 -- they would need to run out
+                    #  of cards before selections could be determined every
+                    #  single beat...
                     res = m.format(self.p1, 'TIED', self.p2)
         else:
             res = m_early.format(self.winner, 'BEAT', self.loser, self.beat)
