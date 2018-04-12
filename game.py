@@ -157,6 +157,12 @@ class Duel:
         return self.handle_priority_selection(p1_selection, p2_selection)
 
     def handle_priority_selection(self, p1_selection, p2_selection):
+        # Player with higher priority becomes the active player.
+        # If there's a tie and *one* player used a finisher, that
+        #  player wins the tie.
+        # If both players use a finisher and there's a priority tie,
+        #  something else happens (not implemented yet).
+        # If there's a tie and neither player used a finisher, clash.
         p1_pri = p1_selection.priority + self.p1.priority
         p2_pri = p2_selection.priority + self.p2.priority
         if p1_pri > p2_pri:
@@ -196,6 +202,8 @@ class Duel:
         self.coordinate_actions(reactor, actor, trigger)
 
     def coordinate_attack(self, atkr, dfdr):
+        # If stunned, before/afterActivating & onDamage/Hit do not happen
+        #  because the entire attack phase is skipped.
         if (not atkr.stunned):
             self.coordinate_before_activating(atkr, dfdr)
             if atkr.can_hit:
@@ -251,6 +259,10 @@ class Duel:
         if self.we_have_a_winner():
             return  # skip if we have a winner
 
+        # If there's no active player when we reach the recycle phase
+        #  (because someone ran out of selectable cards before the
+        #  active player could be decided) then randomly decide who
+        #  gets to recycle first. Generally, this won't matter.
         if self.active_p is None:
             val = randint(0, 1)
             if val == 0:
