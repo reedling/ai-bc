@@ -51,11 +51,11 @@ def main():
         if resp == 'AI vs AI':
             ai1_player, ai2_player = select_ai_chars()
             duel = Duel(ai1_player, ai2_player, Board(), True)
-            duel.start()
+            output = duel.start()
         elif resp == 'Human vs AI':
             user_player, ai_player = select_user_char_and_opponent()
             duel = Duel(user_player, ai_player, Board(), True)
-            duel.start()
+            output = duel.start()
         elif resp == 'Practice':
             user_player = select_user_char()
             dummy_player = Player('Training Dummy', True)
