@@ -1,3 +1,7 @@
+
+
+# An Effects object contains the modifiers, triggers, actions, and conditionals
+# associated with a selection, event, or condition.
 class Effects:
     def __init__(self, modifiers=[], triggers=[], actions=[], conditionals=[]):
         self.modifiers = modifiers
@@ -6,6 +10,9 @@ class Effects:
         self.conditionals = conditionals
 
 
+# A standard Modifier applies to a player for only the current turn.
+# The options opponent, onset, and duration my change this.
+# Modifiers may be something like stun-guard or life loss.
 class Modifier:
     def __init__(self, mtype, val, opponent=False, onset=0, duration=1):
         self.mtype = mtype
@@ -23,12 +30,18 @@ class Modifier:
             return '{} ({}) - Onset in {} - Duration {}'.format(*props)
 
 
+# A Trigger will make its effects available for handling at a specific
+#  point in the beat.  For example, a Trigger with the name 'endOfBeat'
+#  will have its effects handled during the End of Beat phase.
 class Trigger:
     def __init__(self, name, effects=Effects()):
         self.name = name
         self.effects = effects
 
 
+# Actions are high-level descriptors that capture possible behavior.
+# In general, there are several available behaviors available per action.
+# Depending on the state, some of the behaviors may not be executable.
 class Action:
     def __init__(self, atype, opts=[], conditionals=[]):
         self.atype = atype
@@ -73,6 +86,9 @@ class Action:
         return behaviors
 
 
+# A Behavior is a specific, concrete notion of how an action may/will
+#  be executed.  For example, the behavior 'retreat 2' may be derived
+#  from an action of type 'move' with options [1, 2].
 class Behavior:
     def __init__(self, btype, val, conditionals):
         self.btype = btype
@@ -91,6 +107,9 @@ class Behavior:
         ]
 
 
+# A Conditional provides a way of applying different effects circumstantially.
+# For instance, Kallistar's cards all have very different effects based on her
+#  current form.  See kallistar.py for some examples.
 class Conditional:
     def __init__(self, expected, fn, if_result=None, else_result=None,
                  type='equals'):
