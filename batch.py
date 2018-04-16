@@ -7,6 +7,14 @@ from game import Duel
 from player import Player
 
 
+# Expects 3 parameters:
+#   first character name
+#   second character name
+#   number of duels to run
+# E.g., to run 1000 duels between Kallistar and Simple Bob:
+#   python batch.py Kallistar "Simple Bob" 1000
+
+
 def current_milli_time():
     return int(round(time.time() * 1000))
 
